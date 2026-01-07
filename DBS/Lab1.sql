@@ -6,23 +6,23 @@ Table created.
 
 -- 2. Insert five employees information.
 
-SQL> INSERT INTO EMPLOYEE VALUES (101, 'Achintya', 'Uttar Pradesh');
+SQL> INSERT INTO EMPLOYEE VALUES (101, 'AAA', 'Uttar Pradesh');
 
 1 row created.
 
-SQL> INSERT INTO EMPLOYEE VALUES (102, 'Kushagra', 'Faridabad');
+SQL> INSERT INTO EMPLOYEE VALUES (102, 'BBB', 'Faridabad');
 
 1 row created.
 
-SQL> INSERT INTO EMPLOYEE VALUES (103, 'Vatsav', 'Mangalore');
+SQL> INSERT INTO EMPLOYEE VALUES (103, 'CCC', 'Mangalore');
 
 1 row created.
 
-SQL> INSERT INTO EMPLOYEE VALUES (104, 'Kshitiz', 'Manipal');
+SQL> INSERT INTO EMPLOYEE VALUES (104, 'DDD', 'Manipal');
 
 1 row created.
 
-SQL> INSERT INTO EMPLOYEE VALUES (105, 'Devarjya', 'Assam');
+SQL> INSERT INTO EMPLOYEE VALUES (105, 'EEE', 'Assam');
 
 1 row created.
 
@@ -33,11 +33,11 @@ SQL> SELECT EMP_NAME FROM EMPLOYEE;
 
 EMP_NAME
 ---
-Achintya
-Kushagra
-Vatsav
-Kshitiz
-Devarjya
+AAA
+BBB
+CCC
+DDD
+EEE
 
 
 -- 4. Display all the employees from 'Manipal'.
@@ -46,7 +46,7 @@ SQL> SELECT * FROM EMPLOYEE WHERE EMP_ADDRESS='Manipal';
 
     EMP_NO EMP_NAME             EMP_ADDRESS
 ---
-       104 Kshitiz              Manipal
+       104 DDD                  Manipal
 
 
 -- 5. Add a column named salary to employee table.
@@ -109,4 +109,5 @@ Table renamed.
 SQL> DROP TABLE EMPLOYEE1;
 
 Table dropped.
+
 

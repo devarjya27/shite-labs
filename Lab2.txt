@@ -1,0 +1,171 @@
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ date
+Monday 12 January 2026 09:03:57 AM IST
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ echo "240968040 Devarjya Purkayastha"
+240968040 Devarjya Purkayastha
+
+# 1. Execute all the commands explained in this section and write the output.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ echo "file 1" > file1.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ echo "file 2" > file2.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ echo "file 3" > file3.txt
+
+# grep
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep "file" file1.txt file2.txt file3.txt
+file1.txt:file 1
+file2.txt:file 2
+file3.txt:file 3
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep "1" file1.txt file2.txt file3.txt
+file1.txt:file 1
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep ^f file1.txt file2.txt file3.txt
+file1.txt:file 1
+file2.txt:file 2
+file3.txt:file 3
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep -v 2 file1.txt file2.txt file3.txt
+file1.txt:file 1
+file3.txt:file 3
+
+# sort
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ sort file3.txt file2.txt file1.txt
+file 1
+file 2
+file 3
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ sort -r file3.txt file2.txt file1.txt
+file 3
+file 2
+file 1
+
+# wc
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ wc file1.txt
+1 2 7 file1.txt
+
+# cut
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cut -c 1,3,5 file1.txt
+fl 
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cut -c 1-3 file1.txt
+fil
+
+# sed
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ sed -e 's/file/document/' file1.txt
+document 1
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ sed -i '/file/a hello' file2.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cat file2.txt
+file 2
+hello
+
+# ps
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0 168260 12900 ?        Ss   08:35   0:01 /sbin/init
+root           2  0.0  0.0      0     0 ?        S    08:35   0:00 [kthreadd]
+root           3  0.0  0.0      0     0 ?        I<   08:35   0:00 [rcu_gp]
+root           4  0.0  0.0      0     0 ?        I<   08:35   0:00 [rcu_par_gp]
+root           5  0.0  0.0      0     0 ?        I<   08:35   0:00 [slub_flushwq
+...
+
+# chmod
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ ls -la file1.txt
+-rw-r--r-- 1 OSL-4DS-A1 OSL-4DS-A1 7 Jan 12 08:53 file1.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ chmod +x file1.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ ls -la file1.txt
+-rwxr-xr-x 1 OSL-4DS-A1 OSL-4DS-A1 7 Jan 12 08:53 file1.txt
+
+# bs
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ bc
+bc 1.07.1
+Copyright 1991-1994, 1997, 1998, 2000, 2004, 2006, 2008, 2012-2017 Free Software Foundation, Inc.
+This is free software with ABSOLUTELY NO WARRANTY.
+For details type `warranty`. 
+5+2
+7
+7-1
+6
+
+
+# 2. Write grep commands to do the following activities:
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cat ex.txt
+t
+Tt
+ttt3.
+Tttt6
+ttttt7.
+tttt tttt tttt
+
+# To select the lines from a file that have exactly two characters.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep '^..$' ex.txt 
+Tt
+
+# To select the lines from a file that start with the upper case letter.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep '^[A-Z]' ex.txt
+Tt
+Tttt6
+
+# To select the lines from a file that end with a period.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep '[.]$' ex.txt
+ttt3.
+ttttt7.
+
+# To select the lines in a file that has one or more blank spaces.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep ' ' ex.txt
+tttt tttt tttt
+
+# To select the lines in a file and direct them to another file which has digits as one of the characters in that line.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep '[0-9]' ex.txt > ex_digits.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cat ex_digits.txt
+ttt3.
+Tttt6
+ttttt7.
+
+
+# 3. Create file studentInformation.txt using vi editor which contains details in the following format.
+
+# RegistrationNo:Name:Department:Branch:Section:Sub1:Sub2:Sub3
+# 1234:XYZ:ICT:CCE:A:80:60:70 … (add atleast 10 rows)
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cat studentInformation.txt
+240949687:John:ICE:ECE:B:70:86:78
+230129349:Alice:MIE:Mech:C:79:98:88
+220948395:Kevin:DSCA:DSE:A:Data:68:88:91
+250968222:Barry:ICT:CCE:B:88:79:75
+249047431:Gnomes:ICE:EEE:A:99:92:91
+230975633:Shrek:MIE:Industrial:A:67:76:88
+240934822:Steve:ICT:IT:B:88:79:91
+230996855:Francis:ICE:EEE:A:65:71:88
+230985743:Robin:ICT:CCE:C:88:91:77
+240948567:Roman:MIE:Mech:A:77:81:66
+
+# Display the number students( only count) belonging to ICT department.
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep "ICT" studentInformation.txt
+250968222:Barry:ICT:CCE:B:88:79:75
+240934822:Steve:ICT:IT:B:88:79:91
+230985743:Robin:ICT:CCE:C:88:91:77
+
+# Replace all occurrences of IT branch with “Information Technology” and save the output to ITStudents.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ sed -e 's/IT/Information Technology/' studentInformation.txt > ITStudents.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cat ITStudents.txt
+240949687:John:ICE:ECE:B:70:86:78
+230129349:Alice:MIE:Mech:C:79:98:88
+220948395:Kevin:DSCA:DSE:A:Data:68:88:91
+250968222:Barry:ICT:CCE:B:88:79:75
+249047431:Gnomes:ICE:EEE:A:99:92:91
+230975633:Shrek:MIE:Industrial:A:67:76:88
+240934822:Steve:ICT:Information Technology:B:88:79:91
+230996855:Francis:ICE:EEE:A:65:71:88
+230985743:Robin:ICT:CCE:C:88:91:77
+240948567:Roman:MIE:Mech:A:77:81:66
+
+# Display the average marks of student with the given registration number “1234” (or any specific existing number).
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep "230996855" studentInformation.txt | grep -wo '[0-9][0-9]'
+65
+71
+88
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep "230996855" studentInformation.txt | grep -wo '[0-9][0-9]' > scores.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ tr '\n' '+' < scores.txt > sum.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ echo "0" >> sum.txt
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ cat sum.txt
+65+71+88+0
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ echo "($(cat sum.txt)) / 3" | bc -l
+74.66666666666666666666
+
+OSL-4DS-A1@dsl-11:~/OSL/Week_2$ grep "230996855" studentInformation.txt | grep -wo '[0-9][0-9]' > scores.txt; tr '\n' '+' < scores.txt > sum.txt; echo "0" >> sum.txt; echo "($(cat sum.txt)) / 3" | bc -l
+74.66666666666666666666
+
+
+

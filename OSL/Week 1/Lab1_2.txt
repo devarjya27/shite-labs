@@ -1,0 +1,43 @@
+student@sce-cl11-34:~/240968040$ date
+Wednesday 14 January 2026 09:27:15 AM IST
+student@sce-cl11-34:~/240968040$ echo "Devarjya Purkayastha 240968040"
+Devarjya Purkayastha 240968040
+
+# Save the output in Lab1_2.txt, Commands and the output copied from the command prompt.
+# 3. List all the file names satisfying following criteria
+# has the extension .txt.
+student@sce-cl11-34:~/240968040$ find -name "*.txt"
+./Lab1_1.txt
+./2ex/Lab1_2.txt
+
+# containing atleast one digit.
+student@sce-cl11-34:~/240968040$ find -name "*[0-9]*"
+./Lab1_1.txt
+./2ex
+./2ex/ex2
+./2ex/ex1
+./2ex/Lab1_2.txt
+./OS lab manual_2026.pdf
+
+# having minimum length of 4.
+student@sce-cl11-34:~/240968040$ ls
+ 2ex   file_with_more_than_4_chars   Lab1_1.txt   no  'OS lab manual_2026.pdf'
+ student@sce-cl11-34:~/240968040$ find -name "*????*"
+./Lab1_1.txt
+./2ex/Lab1_2.txt
+./OS lab manual_2026.pdf
+./file_with_more_than_4_chars
+
+# does not contain any of the vowels as the start letter.
+student@sce-cl11-34:~/240968040$ ls
+ 2ex   eee                           Lab1_1.txt  'OS lab manual_2026.pdf'
+ aaa   file_with_more_than_4_chars   no
+student@sce-cl11-34:~/240968040$ find -name "[!a,e,i,o,u]*"
+.
+./no
+./Lab1_1.txt
+./2ex
+./2ex/Lab1_2.txt
+./OS lab manual_2026.pdf
+./file_with_more_than_4_chars
+

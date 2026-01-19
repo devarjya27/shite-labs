@@ -12,3 +12,5 @@ do
 done < $1
 
 mv temp.txt "$1"
+
+# 6. Write a shell script which deletes all the even numbered lines in a text file.

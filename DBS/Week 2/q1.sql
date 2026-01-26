@@ -123,3 +123,46 @@ INSERT INTO EMPLOYEE VALUES (107, 'Robin', 'F', 5000, 'New York', 2)
 *
 ERROR at line 1:
 ORA-02290: check constraint (DS18LAB15.MIN_SALARYN) violated
+
+-- 24. Insert appropriate DOB values for employees. Display the birth date of all the employees in the following format:
+-- • ‘DD-MON-YYYY’
+-- • ‘DD-MON-YY’
+-- • ‘DD-MM-YY’
+
+SQL> ALTER TABLE employee ADD (DOB DATE);
+
+Table altered.
+
+SQL> UPDATE employee SET DOB = TO_DATE('15-JAN-1990', 'DD-MON-YYYY') WHERE EMPNO = 101;
+
+1 row updated.
+
+SQL> UPDATE employee SET DOB = TO_DATE('23-AUG-1998', 'DD-MON-YYYY') WHERE EMPNO = 102;
+
+1 row updated.
+
+SQL> UPDATE employee SET DOB = TO_DATE('02-DEC-2002', 'DD-MON-YYYY') WHERE EMPNO = 103;
+
+1 row updated.
+
+
+SQL> SELECT TO_CHAR(DOB, 'DD-MON-YYYY'), TO_CHAR(DOB, 'DD-MON-YY'), TO_CHAR(DOB, 'DD-MM-YY') FROM employee;
+
+TO_CHAR(DOB,'DD-MON- TO_CHAR(DOB,'DD-MO TO_CHAR(
+-------------------- ------------------ --------
+15-JAN-1990          15-JAN-90          15-01-90
+23-AUG-1998          23-AUG-98          23-08-98
+02-DEC-2002          02-DEC-02          02-12-02
+
+-- 25. List the employee names and the year (fully spelled out) in which they are born
+-- • ‘YEAR’
+-- • ‘Year’
+-- • ‘year’
+
+SQL> SELECT EMPNAME, TO_CHAR(DOB, 'YEAR'), TO_CHAR(DOB, 'Year'), TO_CHAR(DOB, 'year') FROM employee;
+
+EMPNAME    TO_CHAR(DOB,'YEAR')                        TO_CHAR(DOB,'YEAR')                        TO_CHAR(DOB,'YEAR')
+---------- ------------------------------------------ ------------------------------------------ ------------------------------------------
+John       NINETEEN NINETY                            Nineteen Ninety                            nineteen ninety
+Alice      NINETEEN NINETY-EIGHT                      Nineteen Ninety-Eight                      nineteen ninety-eight
+Kevin      TWO THOUSAND TWO                           Two Thousand Two                           two thousand two

@@ -1,0 +1,335 @@
+// Create a directory in Hadoop (/user/your_reg_no/lab2). Use the same directory to keep all your files
+bdalab@computinglab23-05:~$ hdfs dfs -mkdir /user/240968040
+bdalab@computinglab23-05:~$ hdfs dfs -mkdir /user/240968040/lab2
+bdalab@computinglab23-05:~$ 
+
+// Upload a new file (Ex. File1.txt) into Hadoop. Demonstrate the hdfs commands for the following
+bdalab@computinglab23-05:~$ echo "lab 2 bdalab" > File1.txt
+bdalab@computinglab23-05:~$ hdfs dfs -put File1.txt /user/240968040/lab2
+
+// a. Check the permission of the file
+bdalab@computinglab23-05:~$ hdfs dfs -ls /user/240968040/lab2
+Found 1 items
+-rw-r--r--   1 bdalab supergroup         13 2026-08-06 11:09 /user/240968040/lab2/File1.txt
+
+// b. Change the permission of the file.
+bdalab@computinglab23-05:~$ hdfs dfs -chmod +x /user/240968040/lab2/File1.txt
+bdalab@computinglab23-05:~$ hdfs dfs -ls /user/240968040/lab2
+Found 1 items
+-rwxr-xr-x   1 bdalab supergroup         13 2026-08-06 11:09 /user/240968040/lab2/File1.txt
+
+// c. Check ownership of the file
+bdalab@computinglab23-05:~$ hdfs dfs -ls /user/240968040/lab2
+Found 1 items
+-rwxr-xr-x   1 bdalab supergroup         13 2026-08-06 11:09 /user/240968040/lab2/File1.txt
+
+
+// Upload a large file (Ex: largefile.txt) into Hadoop. Demonstrate the hdfs commands for following
+
+bdalab@computinglab23-05:~$ hdfs dfs -put largefile.txt /user/240968040/lab2
+
+// a. Check block details of the file
+
+bdalab@computinglab23-05:~$ hdfs fsck /user/240968040/lab2/largefile.txt -files -blocks -locations
+Connecting to namenode via http://localhost:9870/fsck?ugi=bdalab&files=1&blocks=1&locations=1&path=%2Fuser%2F240968040%2Flab2%2Flargefile.txt
+FSCK started by bdalab (auth:SIMPLE) from /127.0.0.1 for path /user/240968040/lab2/largefile.txt at Thu Aug 06 11:21:44 IST 2026
+
+/user/240968040/lab2/largefile.txt 104857600 bytes, replicated: replication=1, 1 block(s):  OK
+0. BP-1071357148-172.18.187.166-1785211599800:blk_1073741847_1023 len=104857600 Live_repl=1  [DatanodeInfoWithStorage[127.0.0.1:9866,DS-57347a40-8088-428e-88e9-60dba153eaa0,DISK]]
+
+
+Status: HEALTHY
+ Number of data-nodes:	1
+ Number of racks:		1
+ Total dirs:			0
+ Total symlinks:		0
+
+Replicated Blocks:
+ Total size:	104857600 B
+ Total files:	1
+ Total blocks (validated):	1 (avg. block size 104857600 B)
+ Minimally replicated blocks:	1 (100.0 %)
+ Over-replicated blocks:	0 (0.0 %)
+ Under-replicated blocks:	0 (0.0 %)
+ Mis-replicated blocks:		0 (0.0 %)
+ Default replication factor:	1
+ Average block replication:	1.0
+ Missing blocks:		0
+ Corrupt blocks:		0
+ Missing replicas:		0 (0.0 %)
+ Blocks queued for replication:	0
+
+Erasure Coded Block Groups:
+ Total size:	0 B
+ Total files:	0
+ Total block groups (validated):	0
+ Minimally erasure-coded block groups:	0
+ Over-erasure-coded block groups:	0
+ Under-erasure-coded block groups:	0
+ Unsatisfactory placement block groups:	0
+ Average block group size:	0.0
+ Missing block groups:		0
+ Corrupt block groups:		0
+ Missing internal blocks:	0
+ Blocks queued for replication:	0
+FSCK ended at Thu Aug 06 11:21:44 IST 2026 in 4 milliseconds
+
+
+The filesystem under path '/user/240968040/lab2/largefile.txt' is HEALTHY
+
+
+// b. View the current replication factor for file
+
+bdalab@computinglab23-05:~$ hdfs dfs -ls /user/240968040/lab2
+Found 2 items
+-rwxr-xr-x   1 bdalab supergroup         13 2026-08-06 11:09 /user/240968040/lab2/File1.txt
+-rw-r--r--   1 bdalab supergroup  104857600 2026-08-06 11:19 /user/240968040/lab2/largefile.txt
+bdalab@computinglab23-05:~$ 
+
+
+// c. Modify the replication factor of the file
+
+bdalab@computinglab23-05:~$ hdfs dfs -setrep  2 /user/240968040/lab2/largefile.txt
+Replication 2 set: /user/240968040/lab2/largefile.txt
+
+// 3. Demonstrate hdfs commands for the following tasks
+
+// a. Check directory size for the directory you have created (Disk usage analysis)
+
+bdalab@computinglab23-05:~$ hdfs dfs -du -s -h /user/240968040/lab2
+100.0 M  200.0 M  /user/240968040/lab2
+bdalab@computinglab23-05:~$ 
+
+// b. Find the total capacity and usage of HDFS
+
+bdalab@computinglab23-05:~$ hdfs dfsadmin -report
+Configured Capacity: 154249338880 (143.66 GB)
+Present Capacity: 109897818112 (102.35 GB)
+DFS Remaining: 109580595200 (102.05 GB)
+DFS Used: 317222912 (302.53 MB)
+DFS Used%: 0.29%
+Replicated Blocks:
+	Under replicated blocks: 5
+	Blocks with corrupt replicas: 0
+	Missing blocks: 0
+	Missing blocks (with replication factor 1): 0
+	Low redundancy blocks with highest priority to recover: 5
+	Pending deletion blocks: 0
+Erasure Coded Block Groups: 
+	Low redundancy block groups: 0
+	Block groups with corrupt internal blocks: 0
+	Missing block groups: 0
+	Low redundancy blocks with highest priority to recover: 0
+	Pending deletion blocks: 0
+
+-------------------------------------------------
+Live datanodes (1):
+
+Name: 127.0.0.1:9866 (localhost)
+Hostname: computinglab23-05
+Decommission Status : Normal
+Configured Capacity: 154249338880 (143.66 GB)
+DFS Used: 317222912 (302.53 MB)
+Non DFS Used: 36441485312 (33.94 GB)
+DFS Remaining: 109580595200 (102.05 GB)
+DFS Used%: 0.21%
+DFS Remaining%: 71.04%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 0
+Last contact: Thu Aug 06 11:39:59 IST 2026
+Last Block Report: Thu Aug 06 11:33:20 IST 2026
+Num of Blocks: 19
+
+
+// 4. Upload a text file with sample data to the Hadoop (Ex: analytics.txt). Using HDFS commands, find
+
+bdalab@computinglab23-05:~$ hdfs dfs -put analytics.txt /user/240968040/lab2/analytics.txt
+
+// a. Number of lines in the file
+
+bdalab@computinglab23-05:~$ hdfs dfs -cat /user/240968040/lab2/analytics.txt | wc -l
+5
+
+// b. Number of occurrences of a specific word (Ex. Hadoop) in the file.
+
+bdalab@computinglab23-05:~$ hdfs dfs -cat /user/240968040/lab2/analytics.txt | grep -o -i "Hadoop" | wc -l
+4
+
+// 1. Consider the text file (consider larger file size) of your choice and perform word count using
+MapReduce technique.
+
+bdalab@computinglab23-05:~/Documents/240968040/week2$ cat analytics.txt | python3 mapper.py | sort | python3 reducer.py
+a	2
+analytics.	1
+Analytics	1
+big	2
+data	3
+data.	1
+distributed	1
+file	1
+framework.	1
+Hadoop	4
+HDFS	1
+HDFS.	1
+helps	1
+in	1
+is	3
+popular	1
+process	1
+stores	1
+system.	1
+
+
+// 2. Perform Matrix operations using MapReduce by considering 3 * 3 matrix and perform following operations:
+// i. Matrix addition and subtraction
+
+bdalab@computinglab23-05:~/Documents/240968040/week2$ cat matrix_input.txt | python3 mapper_add_sub.py | sort | python3 reducer_add_sub.py
+0,0 -> Add: 11 | Sub: 9
+0,1 -> Add: 22 | Sub: 18
+0,2 -> Add: 33 | Sub: 27
+1,0 -> Add: 44 | Sub: 36
+1,1 -> Add: 55 | Sub: 45
+1,2 -> Add: 66 | Sub: 54
+2,0 -> Add: 77 | Sub: 63
+2,1 -> Add: 88 | Sub: 72
+2,2 -> Add: 99 | Sub: 81
+
+
+# mapper_add_sub.py
+import sys
+for line in sys.stdin:
+    m, r, c, v = line.strip().split(',')
+    for k in range(3):
+        if m == 'a': print(f"{r},{k}\ta\t{c}\t{v}")
+        else: print(f"{k},{c}\tb\t{r}\t{v}")
+    
+    
+# reducer_add_sub.py
+import sys
+d = {}
+for line in sys.stdin:
+    k, m, v = line.strip().split('\t')
+    d[m] = int(v)
+    if 'a' in d and 'b' in d:
+        print(f"{k} -> Add: {d['a']+d['b']} | Sub: {d['a']-d['b']}")
+        d.clear()
+        
+
+
+// ii. Matrix Multiplication
+
+bdalab@computinglab23-05:~/Documents/240968040/week2$ cat matrix_input.txt | python3 mapper_mul.py | sort | python3 reducer_mul.py
+0,0 = 300
+0,1 = 360
+0,2 = 420
+1,0 = 660
+1,1 = 810
+1,2 = 960
+2,0 = 1020
+2,1 = 1260
+2,2 = 1500
+
+
+# mapper_mul.py
+import sys
+for line in sys.stdin:
+    m, r, c, v = line.strip().split(',')
+    for k in range(3):
+        if m == 'a': print(f"{r},{k}\ta\t{c}\t{v}")
+        else: print(f"{k},{c}\tb\t{r}\t{v}")
+        
+
+# reducer_mul.py
+import sys
+cur, A, B = None, {}, {}
+for line in sys.stdin:
+    k, m, i, v = line.strip().split('\t')
+    if cur and cur != k:
+        ans = sum(A.get(i,0) * B.get(i,0) for i in range(3))
+        print(f"{cur} = {ans}")
+        A, B = {}, {}
+    cur = k
+    (A if m == 'a' else B)[int(i)] = int(v)
+if cur:
+    ans = sum(A.get(i,0) * B.get(i,0) for i in range(3))
+    print(f"{cur} = {ans}")
+    
+    
+
+// iii. Matrix transpose
+
+bdalab@computinglab23-05:~/Documents/240968040/week2$ cat matrix_input.txt | python3 mapper_trans.py | sort | python3 reducer_trans.py
+0,0,10
+0,1,40
+0,2,70
+1,0,20
+1,1,50
+1,2,80
+2,0,30
+2,1,60
+2,2,90
+
+# mapper_trans.py
+
+import sys
+for line in sys.stdin:
+    m, r, c, v = line.strip().split(',')
+    if m == 'a': print(f"{c}\t{r}\t{v}")
+    
+# reducer_trans.py
+
+import sys
+for line in sys.stdin:
+    print(line.strip().replace('\t', ','))
+    
+
+
+// Create a text file containing the 20 student details such as registration number, name and marks (ex: 1001, john,45 ) .Write a MapReduce program to sort data by student name
+
+
+bdalab@computinglab23-05:~/Documents/240968040/week2$ cat students.txt | python3 mapper_sort.py | sort | python3 reducer_sort.py
+1002,Alice,78
+1003,Bob,62
+1004,Charlie,85
+1005,David,90
+1006,Emma,55
+1007,Frank,67
+1008,Grace,74
+1009,Hannah,88
+1010,Ian,92
+1011,Jack,49
+1001,John,45
+1012,Kathy,81
+1013,Leo,63
+1014,Mona,79
+1015,Nathan,84
+1016,Olivia,95
+1017,Paul,58
+1018,Quinn,70
+1019,Rachel,87
+1020,Sam,91
+
+
+# mapper_sort.py
+import sys
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    reg_no, name, marks = line.split(',')
+    # Output Name as Key, and (RegNo, Marks) as Value
+    print(f"{name}\t{reg_no},{marks}")
+    
+# reducer_sort.py
+import sys
+for line in sys.stdin:
+    name, val = line.strip().split('\t')
+    reg_no, marks = val.split(',')
+    # Format the final sorted output: RegNo, Name, Marks
+    print(f"{reg_no},{name},{marks}")
+
+

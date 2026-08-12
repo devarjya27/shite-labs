@@ -1,0 +1,38 @@
+a) Remove directory 
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -mkdir /test
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -rm -r /test
+Deleted /test
+
+
+b) View/Read File Contents
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -cat /240968040/week1/week1.txt
+240968040
+
+
+c) Download/copy a file from HDFS to the local system
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -get /240968040/week1/week1.txt ~/Downloads/
+bdalab@computinglab23-05:~/Documents/240968040$ ls ~/Downloads
+week1.txt
+
+
+d) Copy/move files within HDFS
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -cp /240968040/week1/week1.txt /240968040/week1/copy.txt
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -ls /240968040/week1
+Found 2 items
+-rw-r--r--   1 bdalab supergroup         10 2026-07-30 11:36 /240968040/week1/copy.txt
+-rw-r--r--   1 bdalab supergroup         10 2026-07-30 11:38 /240968040/week1/week1.txt
+
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -mv /240968040/week1/week1.txt /backup/week1.txt
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -ls /backup
+Found 1 items
+-rw-r--r--   1 bdalab supergroup         10 2026-07-30 11:28 /backup/week1.txt
+
+e) Remove file from HDFS
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -rm /backup/week1.txt
+Deleted /backup/week1.txt
+
+f) View file permission
+bdalab@computinglab23-05:~/Documents/240968040$ hdfs dfs -ls /240968040/week1
+Found 1 items
+-rw-r--r--   1 bdalab supergroup         10 2026-07-30 11:36 /240968040/week1/copy.txt
+

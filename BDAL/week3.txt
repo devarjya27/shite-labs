@@ -1,0 +1,743 @@
+DEMO
+bdalab@computinglab23-05:~/Documents/240968040/week3$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.4.1.jar -file ./mapper.py -mapper 'python3 mapper.py' -file ./reducer.py -reducer 'python3 reducer.py' -input /user/240968040/lab3/inputwc.txt -output /user/240968040/lab3/output1
+2026-08-13 10:50:34,093 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
+packageJobJar: [./mapper.py, ./reducer.py, /tmp/hadoop-unjar1912532928786440846/] [] /tmp/streamjob8017708085226682390.jar tmpDir=null
+2026-08-13 10:50:34,620 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 10:50:34,746 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 10:50:34,877 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/bdalab/.staging/job_1786597585578_0003
+2026-08-13 10:50:35,524 INFO mapred.FileInputFormat: Total input files to process : 1
+2026-08-13 10:50:36,364 INFO mapreduce.JobSubmitter: number of splits:2
+2026-08-13 10:50:36,440 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1786597585578_0003
+2026-08-13 10:50:36,440 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2026-08-13 10:50:36,582 INFO conf.Configuration: resource-types.xml not found
+2026-08-13 10:50:36,582 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2026-08-13 10:50:36,634 INFO impl.YarnClientImpl: Submitted application application_1786597585578_0003
+2026-08-13 10:50:36,665 INFO mapreduce.Job: The url to track the job: http://computinglab23-05:8088/proxy/application_1786597585578_0003/
+2026-08-13 10:50:36,666 INFO mapreduce.Job: Running job: job_1786597585578_0003
+2026-08-13 10:50:40,722 INFO mapreduce.Job: Job job_1786597585578_0003 running in uber mode : false
+2026-08-13 10:50:40,724 INFO mapreduce.Job:  map 0% reduce 0%
+2026-08-13 10:50:44,790 INFO mapreduce.Job:  map 100% reduce 0%
+2026-08-13 10:50:48,809 INFO mapreduce.Job:  map 100% reduce 100%
+2026-08-13 10:50:48,826 INFO mapreduce.Job: Job job_1786597585578_0003 completed successfully
+2026-08-13 10:50:48,908 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=240
+		FILE: Number of bytes written=941840
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=441
+		HDFS: Number of bytes written=164
+		HDFS: Number of read operations=11
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=1
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=3409
+		Total time spent by all reduces in occupied slots (ms)=1528
+		Total time spent by all map tasks (ms)=3409
+		Total time spent by all reduce tasks (ms)=1528
+		Total vcore-milliseconds taken by all map tasks=3409
+		Total vcore-milliseconds taken by all reduce tasks=1528
+		Total megabyte-milliseconds taken by all map tasks=3490816
+		Total megabyte-milliseconds taken by all reduce tasks=1564672
+	Map-Reduce Framework
+		Map input records=4
+		Map output records=20
+		Map output bytes=194
+		Map output materialized bytes=246
+		Input split bytes=210
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=16
+		Reduce shuffle bytes=246
+		Reduce input records=20
+		Reduce output records=16
+		Spilled Records=40
+		Shuffled Maps =2
+		Failed Shuffles=0
+		Merged Map outputs=2
+		GC time elapsed (ms)=104
+		CPU time spent (ms)=1420
+		Physical memory (bytes) snapshot=940740608
+		Virtual memory (bytes) snapshot=7826137088
+		Total committed heap usage (bytes)=996147200
+		Peak Map Physical memory (bytes)=340623360
+		Peak Map Virtual memory (bytes)=2607837184
+		Peak Reduce Physical memory (bytes)=267071488
+		Peak Reduce Virtual memory (bytes)=2610618368
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=231
+	File Output Format Counters 
+		Bytes Written=164
+2026-08-13 10:50:48,908 INFO streaming.StreamJob: Output directory: /user/240968040/lab3/output1
+bdalab@computinglab23-05:~/Documents/240968040/week3$ hdfs dfs -cat /user/240968040/lab3/output1/part-00000
+Academy	1
+Application	1
+Computer	1
+Data	1
+Department	1
+Education	1
+Higher	1
+India	1
+Institute	1
+Karnataka,	1
+Manipal	3
+Manipal,	1
+Science	1
+Technology	1
+and	1
+of	3
+
+
+Q1) Character Frequency Count: Given a text file, count the frequency of each alphabetic character
+(case-insensitive, ignore spaces/punctuation). Hint: modify the mapper to emit one character per
+line instead of a word.
+
+#mapper.py
+#!/usr/bin/env python3
+# mapper.py
+import sys
+
+# Read lines from standard input
+for line in sys.stdin:
+    # Convert to lowercase for case-insensitivity
+    line = line.lower()
+    
+    # Iterate through each character in the line
+    for char in line:
+        # Emit only if the character is an alphabetic letter (a-z)
+        if char.isalpha():
+            print(f"{char}\t1")
+            
+# reducer.py
+#!/usr/bin/env python3
+# reducer.py
+import sys
+
+current_char = None
+current_count = 0
+char = None
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    
+    try:
+        char, count = line.split("\t", 1)
+        count = int(count)
+    except ValueError:
+        continue
+
+    # If this is the same character, accumulate its count
+    if current_char == char:
+        current_count += count
+    else:
+        if current_char:
+            # Emit the previous character and its total count
+            print(f"{current_char}\t{current_count}")
+        current_char = char
+        current_count = count
+
+# Emit the last character
+if current_char == char:
+    print(f"{current_char}\t{current_count}")
+    
+    
+
+bdalab@computinglab23-05:~/Documents/240968040/week3/q1$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.4.1.jar -file ./mapper.py -mapper 'python3 mapper.py' -file ./reducer.py -reducer 'python3 reducer.py' -input /user/240968040/lab3/inputwc.txt -output /user/240968040/lab3/outputq1
+2026-08-13 11:08:00,733 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
+packageJobJar: [./mapper.py, ./reducer.py, /tmp/hadoop-unjar2467411061356910227/] [] /tmp/streamjob1623034070450859600.jar tmpDir=null
+2026-08-13 11:08:01,347 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:08:01,493 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:08:01,651 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/bdalab/.staging/job_1786597585578_0004
+2026-08-13 11:08:01,923 INFO mapred.FileInputFormat: Total input files to process : 1
+2026-08-13 11:08:01,968 INFO mapreduce.JobSubmitter: number of splits:2
+2026-08-13 11:08:02,056 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1786597585578_0004
+2026-08-13 11:08:02,056 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2026-08-13 11:08:02,204 INFO conf.Configuration: resource-types.xml not found
+2026-08-13 11:08:02,204 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2026-08-13 11:08:02,254 INFO impl.YarnClientImpl: Submitted application application_1786597585578_0004
+2026-08-13 11:08:02,283 INFO mapreduce.Job: The url to track the job: http://computinglab23-05:8088/proxy/application_1786597585578_0004/
+2026-08-13 11:08:02,285 INFO mapreduce.Job: Running job: job_1786597585578_0004
+2026-08-13 11:08:07,348 INFO mapreduce.Job: Job job_1786597585578_0004 running in uber mode : false
+2026-08-13 11:08:07,349 INFO mapreduce.Job:  map 0% reduce 0%
+2026-08-13 11:08:11,454 INFO mapreduce.Job:  map 100% reduce 0%
+2026-08-13 11:08:16,476 INFO mapreduce.Job:  map 100% reduce 100%
+2026-08-13 11:08:16,481 INFO mapreduce.Job: Job job_1786597585578_0004 completed successfully
+2026-08-13 11:08:16,550 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=798
+		FILE: Number of bytes written=942977
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=441
+		HDFS: Number of bytes written=81
+		HDFS: Number of read operations=11
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=1
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=3847
+		Total time spent by all reduces in occupied slots (ms)=1673
+		Total time spent by all map tasks (ms)=3847
+		Total time spent by all reduce tasks (ms)=1673
+		Total vcore-milliseconds taken by all map tasks=3847
+		Total vcore-milliseconds taken by all reduce tasks=1673
+		Total megabyte-milliseconds taken by all map tasks=3939328
+		Total megabyte-milliseconds taken by all reduce tasks=1713152
+	Map-Reduce Framework
+		Map input records=4
+		Map output records=132
+		Map output bytes=528
+		Map output materialized bytes=804
+		Input split bytes=210
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=19
+		Reduce shuffle bytes=804
+		Reduce input records=132
+		Reduce output records=19
+		Spilled Records=264
+		Shuffled Maps =2
+		Failed Shuffles=0
+		Merged Map outputs=2
+		GC time elapsed (ms)=135
+		CPU time spent (ms)=1570
+		Physical memory (bytes) snapshot=859889664
+		Virtual memory (bytes) snapshot=7822381056
+		Total committed heap usage (bytes)=905445376
+		Peak Map Physical memory (bytes)=338595840
+		Peak Map Virtual memory (bytes)=2606129152
+		Peak Reduce Physical memory (bytes)=226402304
+		Peak Reduce Virtual memory (bytes)=2611089408
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=231
+	File Output Format Counters 
+		Bytes Written=81
+2026-08-13 11:08:16,551 INFO streaming.StreamJob: Output directory: /user/240968040/lab3/outputq1
+bdalab@computinglab23-05:~/Documents/240968040/week3/q1$ hdfs dfs -cat /user/240968040/lab3/outputq1/part-00000
+a	22
+c	7
+d	6
+e	10
+f	3
+g	2
+h	3
+i	13
+k	2
+l	6
+m	7
+n	13
+o	8
+p	8
+r	4
+s	2
+t	11
+u	3
+y	2
+
+
+Q2) Sales Record Count per Region: Input: sales.csv with columns OrderID, Region, Amount. Count
+the number of orders per region. Hint: mapper emits region\t1 after splitting each CSV line on
+commas; reducer is identical to Word Count's reducer.
+
+
+#mapper.py
+
+#!/usr/bin/env python3
+# mapper.py
+import sys
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+        
+    # Skip the header row if present in sales.csv
+    if line.startswith("OrderID"):
+        continue
+        
+    # Split the CSV line by commas
+    parts = line.split(",")
+    
+    # Ensure the row has enough columns (OrderID, Region, Amount)
+    if len(parts) >= 3:
+        region = parts[1].strip()
+        # Emit region and a count of 1
+        print(f"{region}\t1")
+        
+
+#reducer.py
+
+#!/usr/bin/env python3
+# reducer.py
+import sys
+
+current_char = None
+current_count = 0
+char = None
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    
+    try:
+        char, count = line.split("\t", 1)
+        count = int(count)
+    except ValueError:
+        continue
+
+    # If this is the same character, accumulate its count
+    if current_char == char:
+        current_count += count
+    else:
+        if current_char:
+            # Emit the previous character and its total count
+            print(f"{current_char}\t{current_count}")
+        current_char = char
+        current_count = count
+
+# Emit the last character
+if current_char == char:
+    print(f"{current_char}\t{current_count}")
+    
+ 
+bdalab@computinglab23-05:~/Documents/240968040/week3/q2$ hdfs dfs -put sales.csv /user/240968040/lab3/sales.csv
+bdalab@computinglab23-05:~/Documents/240968040/week3/q2$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.4.1.jar -file ./mapper.py -mapper 'python3 mapper.py' -file ./reducer.py -reducer 'python3 reducer.py' -input /user/240968040/lab3/sales.csv -output /user/240968040/lab3/outputq2
+2026-08-13 11:12:05,680 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
+packageJobJar: [./mapper.py, ./reducer.py, /tmp/hadoop-unjar3607033972686437583/] [] /tmp/streamjob930404950688639808.jar tmpDir=null
+2026-08-13 11:12:06,208 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:12:06,329 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:12:06,467 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/bdalab/.staging/job_1786597585578_0005
+2026-08-13 11:12:06,710 INFO mapred.FileInputFormat: Total input files to process : 1
+2026-08-13 11:12:06,751 INFO mapreduce.JobSubmitter: number of splits:2
+2026-08-13 11:12:06,827 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1786597585578_0005
+2026-08-13 11:12:06,827 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2026-08-13 11:12:06,962 INFO conf.Configuration: resource-types.xml not found
+2026-08-13 11:12:06,962 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2026-08-13 11:12:07,006 INFO impl.YarnClientImpl: Submitted application application_1786597585578_0005
+2026-08-13 11:12:07,026 INFO mapreduce.Job: The url to track the job: http://computinglab23-05:8088/proxy/application_1786597585578_0005/
+2026-08-13 11:12:07,027 INFO mapreduce.Job: Running job: job_1786597585578_0005
+2026-08-13 11:12:12,097 INFO mapreduce.Job: Job job_1786597585578_0005 running in uber mode : false
+2026-08-13 11:12:12,099 INFO mapreduce.Job:  map 0% reduce 0%
+2026-08-13 11:12:15,209 INFO mapreduce.Job:  map 100% reduce 0%
+2026-08-13 11:12:19,247 INFO mapreduce.Job:  map 100% reduce 100%
+2026-08-13 11:12:19,260 INFO mapreduce.Job: Job job_1786597585578_0005 completed successfully
+2026-08-13 11:12:19,319 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=55
+		FILE: Number of bytes written=941482
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=343
+		HDFS: Number of bytes written=23
+		HDFS: Number of read operations=11
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=1
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=3308
+		Total time spent by all reduces in occupied slots (ms)=1469
+		Total time spent by all map tasks (ms)=3308
+		Total time spent by all reduce tasks (ms)=1469
+		Total vcore-milliseconds taken by all map tasks=3308
+		Total vcore-milliseconds taken by all reduce tasks=1469
+		Total megabyte-milliseconds taken by all map tasks=3387392
+		Total megabyte-milliseconds taken by all reduce tasks=1504256
+	Map-Reduce Framework
+		Map input records=6
+		Map output records=5
+		Map output bytes=39
+		Map output materialized bytes=61
+		Input split bytes=206
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=3
+		Reduce shuffle bytes=61
+		Reduce input records=5
+		Reduce output records=3
+		Spilled Records=10
+		Shuffled Maps =2
+		Failed Shuffles=0
+		Merged Map outputs=2
+		GC time elapsed (ms)=95
+		CPU time spent (ms)=1340
+		Physical memory (bytes) snapshot=853893120
+		Virtual memory (bytes) snapshot=7820361728
+		Total committed heap usage (bytes)=904396800
+		Peak Map Physical memory (bytes)=328404992
+		Peak Map Virtual memory (bytes)=2607116288
+		Peak Reduce Physical memory (bytes)=228392960
+		Peak Reduce Virtual memory (bytes)=2609790976
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=137
+	File Output Format Counters 
+		Bytes Written=23
+2026-08-13 11:12:19,319 INFO streaming.StreamJob: Output directory: /user/240968040/lab3/outputq2
+bdalab@computinglab23-05:~/Documents/240968040/week3/q2$ hdfs dfs -cat /user/240968040/lab3/outputq2/part-00000
+East	1
+North	2
+South	2
+
+
+
+Q3) Maximum Temperature per City: Input: weather.csv with columns City, Date, Temperature.
+Find the maximum temperature recorded for each city. Hint: mapper emits city\ttemperature;
+reducer tracks the max value seen per key instead of summing.
+
+# mapper.py
+#!/usr/bin/env python3
+# mapper.py
+import sys
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+        
+    # Skip the header row if present in weather.csv
+    if line.startswith("City"):
+        continue
+        
+    # Split the CSV line by commas
+    parts = line.split(",")
+    
+    # Ensure the row has enough columns (City, Date, Temperature)
+    if len(parts) >= 3:
+        city = parts[0].strip()
+        temperature = parts[2].strip()
+        
+        # Emit city and temperature
+        print(f"{city}\t{temperature}")
+        
+        
+        
+# reducer.py
+#!/usr/bin/env python3
+# reducer.py
+import sys
+
+current_city = None
+max_temp = float('-inf')
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    
+    try:
+        city, temp_str = line.split("\t", 1)
+        temp = float(temp_str)
+    except ValueError:
+        continue
+
+    # If it's the same city, compare and keep the maximum temperature
+    if current_city == city:
+        if temp > max_temp:
+            max_temp = temp
+    else:
+        # If we move to a new city, emit the result for the previous city
+        if current_city is not None:
+            print(f"{current_city}\t{max_temp}")
+        current_city = city
+        max_temp = temp
+
+# Emit the maximum temperature for the last city
+if current_city is not None:
+    print(f"{current_city}\t{max_temp}")
+    
+    
+    
+bdalab@computinglab23-05:~/Documents/240968040/week3/q3$ hdfs dfs -put weather.csv /user/240968040/lab3/weather.csv
+bdalab@computinglab23-05:~/Documents/240968040/week3/q3$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.4.1.jar -file ./mapper.py -mapper 'python3 mapper.py' -file ./reducer.py -reducer 'python3 reducer.py' -input /user/240968040/lab3/weather.csv -output /user/240968040/lab3/outputq3
+2026-08-13 11:17:48,377 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
+packageJobJar: [./mapper.py, ./reducer.py, /tmp/hadoop-unjar6685706797815375142/] [] /tmp/streamjob3641531618189495135.jar tmpDir=null
+2026-08-13 11:17:48,883 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:17:48,999 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:17:49,129 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/bdalab/.staging/job_1786597585578_0006
+2026-08-13 11:17:49,360 INFO mapred.FileInputFormat: Total input files to process : 1
+2026-08-13 11:17:49,397 INFO mapreduce.JobSubmitter: number of splits:2
+2026-08-13 11:17:49,472 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1786597585578_0006
+2026-08-13 11:17:49,473 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2026-08-13 11:17:49,595 INFO conf.Configuration: resource-types.xml not found
+2026-08-13 11:17:49,596 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2026-08-13 11:17:49,638 INFO impl.YarnClientImpl: Submitted application application_1786597585578_0006
+2026-08-13 11:17:49,658 INFO mapreduce.Job: The url to track the job: http://computinglab23-05:8088/proxy/application_1786597585578_0006/
+2026-08-13 11:17:49,659 INFO mapreduce.Job: Running job: job_1786597585578_0006
+2026-08-13 11:17:53,764 INFO mapreduce.Job: Job job_1786597585578_0006 running in uber mode : false
+2026-08-13 11:17:53,766 INFO mapreduce.Job:  map 0% reduce 0%
+2026-08-13 11:17:57,846 INFO mapreduce.Job:  map 100% reduce 0%
+2026-08-13 11:18:00,864 INFO mapreduce.Job:  map 100% reduce 100%
+2026-08-13 11:18:01,888 INFO mapreduce.Job: Job job_1786597585578_0006 completed successfully
+2026-08-13 11:18:01,945 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=64
+		FILE: Number of bytes written=941509
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=398
+		HDFS: Number of bytes written=23
+		HDFS: Number of read operations=11
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=1
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=3186
+		Total time spent by all reduces in occupied slots (ms)=1451
+		Total time spent by all map tasks (ms)=3186
+		Total time spent by all reduce tasks (ms)=1451
+		Total vcore-milliseconds taken by all map tasks=3186
+		Total vcore-milliseconds taken by all reduce tasks=1451
+		Total megabyte-milliseconds taken by all map tasks=3262464
+		Total megabyte-milliseconds taken by all reduce tasks=1485824
+	Map-Reduce Framework
+		Map input records=6
+		Map output records=5
+		Map output bytes=48
+		Map output materialized bytes=70
+		Input split bytes=210
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=2
+		Reduce shuffle bytes=70
+		Reduce input records=5
+		Reduce output records=2
+		Spilled Records=10
+		Shuffled Maps =2
+		Failed Shuffles=0
+		Merged Map outputs=2
+		GC time elapsed (ms)=101
+		CPU time spent (ms)=1340
+		Physical memory (bytes) snapshot=896143360
+		Virtual memory (bytes) snapshot=7823810560
+		Total committed heap usage (bytes)=937951232
+		Peak Map Physical memory (bytes)=333889536
+		Peak Map Virtual memory (bytes)=2606624768
+		Peak Reduce Physical memory (bytes)=231161856
+		Peak Reduce Virtual memory (bytes)=2612113408
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=188
+	File Output Format Counters 
+		Bytes Written=23
+2026-08-13 11:18:01,945 INFO streaming.StreamJob: Output directory: /user/240968040/lab3/outputq3
+bdalab@computinglab23-05:~/Documents/240968040/week3/q3$ hdfs dfs -cat /user/240968040/lab3/outputq3/part-00000
+Delhi	21.0
+Mumbai	35.0
+
+
+
+
+Q4) Average Rating per Product: Input: ratings.csv with columns ProductID, UserID, Rating.
+Compute the average rating per product. Hint: mapper emits product_id\trating; reducer
+accumulates (sum, count) per key and divides at the end.
+
+# mapper.py
+#!/usr/bin/env python3
+# mapper.py
+import sys
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+        
+    # Skip the header row if present in ratings.csv
+    if line.startswith("ProductID"):
+        continue
+        
+    # Split the CSV line by commas
+    parts = line.split(",")
+    
+    # Ensure the row has enough columns (ProductID, UserID, Rating)
+    if len(parts) >= 3:
+        product_id = parts[0].strip()
+        rating = parts[2].strip()
+        
+        # Emit product_id and rating
+        print(f"{product_id}\t{rating}")
+        
+
+# reducer.py
+
+#!/usr/bin/env python3
+# reducer.py
+import sys
+
+current_product = None
+total_sum = 0.0
+count = 0
+
+# Read lines from standard input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    
+    try:
+        product_id, rating_str = line.split("\t", 1)
+        rating = float(rating_str)
+    except ValueError:
+        continue
+
+    # If it's the same product, accumulate sum and count
+    if current_product == product_id:
+        total_sum += rating
+        count += 1
+    else:
+        # If we move to a new product, calculate and emit average for the previous product
+        if current_product is not None:
+            avg_rating = total_sum / count if count > 0 else 0.0
+            print(f"{current_product}\t{avg_rating:.2f}")
+        
+        current_product = product_id
+        total_sum = rating
+        count = 1
+
+# Emit the average rating for the last product
+if current_product is not None:
+    avg_rating = total_sum / count if count > 0 else 0.0
+    print(f"{current_product}\t{avg_rating:.2f}")
+    
+    
+    
+    
+    
+bdalab@computinglab23-05:~/Documents/240968040/week3/q4$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.4.1.jar -file ./mapper.py -mapper 'python3 mapper.py' -file ./reducer.py -reducer 'python3 reducer.py' -input /user/240968040/lab3/rating.csv -output /user/240968040/lab3/outputq4
+2026-08-13 11:28:56,648 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
+packageJobJar: [./mapper.py, ./reducer.py, /tmp/hadoop-unjar3893058115978260980/] [] /tmp/streamjob8899025624238826372.jar tmpDir=null
+2026-08-13 11:28:57,268 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:28:57,412 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-08-13 11:28:57,576 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/bdalab/.staging/job_1786597585578_0007
+2026-08-13 11:28:57,853 INFO mapred.FileInputFormat: Total input files to process : 1
+2026-08-13 11:28:57,897 INFO mapreduce.JobSubmitter: number of splits:2
+2026-08-13 11:28:57,979 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1786597585578_0007
+2026-08-13 11:28:57,979 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2026-08-13 11:28:58,138 INFO conf.Configuration: resource-types.xml not found
+2026-08-13 11:28:58,138 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2026-08-13 11:28:58,198 INFO impl.YarnClientImpl: Submitted application application_1786597585578_0007
+2026-08-13 11:28:58,229 INFO mapreduce.Job: The url to track the job: http://computinglab23-05:8088/proxy/application_1786597585578_0007/
+2026-08-13 11:28:58,230 INFO mapreduce.Job: Running job: job_1786597585578_0007
+2026-08-13 11:29:03,321 INFO mapreduce.Job: Job job_1786597585578_0007 running in uber mode : false
+2026-08-13 11:29:03,322 INFO mapreduce.Job:  map 0% reduce 0%
+2026-08-13 11:29:07,433 INFO mapreduce.Job:  map 100% reduce 0%
+2026-08-13 11:29:12,459 INFO mapreduce.Job:  map 100% reduce 100%
+2026-08-13 11:29:12,466 INFO mapreduce.Job: Job job_1786597585578_0007 completed successfully
+2026-08-13 11:29:12,531 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=51
+		FILE: Number of bytes written=941483
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=319
+		HDFS: Number of bytes written=20
+		HDFS: Number of read operations=11
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=1
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=3707
+		Total time spent by all reduces in occupied slots (ms)=1630
+		Total time spent by all map tasks (ms)=3707
+		Total time spent by all reduce tasks (ms)=1630
+		Total vcore-milliseconds taken by all map tasks=3707
+		Total vcore-milliseconds taken by all reduce tasks=1630
+		Total megabyte-milliseconds taken by all map tasks=3795968
+		Total megabyte-milliseconds taken by all reduce tasks=1669120
+	Map-Reduce Framework
+		Map input records=6
+		Map output records=5
+		Map output bytes=35
+		Map output materialized bytes=57
+		Input split bytes=208
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=2
+		Reduce shuffle bytes=57
+		Reduce input records=5
+		Reduce output records=2
+		Spilled Records=10
+		Shuffled Maps =2
+		Failed Shuffles=0
+		Merged Map outputs=2
+		GC time elapsed (ms)=104
+		CPU time spent (ms)=1530
+		Physical memory (bytes) snapshot=900685824
+		Virtual memory (bytes) snapshot=7816884224
+		Total committed heap usage (bytes)=932708352
+		Peak Map Physical memory (bytes)=333971456
+		Peak Map Virtual memory (bytes)=2605756416
+		Peak Reduce Physical memory (bytes)=232808448
+		Peak Reduce Virtual memory (bytes)=2607038464
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=111
+	File Output Format Counters 
+		Bytes Written=20
+2026-08-13 11:29:12,531 INFO streaming.StreamJob: Output directory: /user/240968040/lab3/outputq4
+bdalab@computinglab23-05:~/Documents/240968040/week3/q4$ hdfs dfs -cat /user/240968040/lab3/outputq4/part-00000
+P101	4.00
+P102	4.50
+
+

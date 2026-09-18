@@ -1,0 +1,614 @@
+# DEMO
+hbase:001:0> create 'students','info','contact'
+2026-09-17 10:53:38,807 INFO  [main] client.HBaseAdmin (HBaseAdmin.java:postOperationResult(3599)) - Operation: CREATE, Table Name: default:students, procId: 105 completed
+Created table students
+Took 2.4262 seconds                                                             
+=> Hbase::Table - students
+hbase:002:0> put 'students','1','info:name','Alice'
+Took 0.1040 seconds                                                             
+hbase:003:0> put 'students','1','info:age','22'
+Took 0.0042 seconds                                                             
+hbase:004:0> put 'students','1','contact:email','alice@gmail.com'
+Took 0.0031 seconds                                                             
+hbase:005:0> get 'students','1'
+COLUMN                CELL                                                      
+ contact:email        timestamp=2026-09-17T10:54:51.709, value=alice@gmail.com  
+ info:age             timestamp=2026-09-17T10:54:25.052, value=22               
+ info:name            timestamp=2026-09-17T10:54:08.870, value=Alice            
+1 row(s)
+Took 0.0300 seconds                                                             
+hbase:006:0> scan 'students'
+ROW                   COLUMN+CELL                                               
+ 1                    column=contact:email, timestamp=2026-09-17T10:54:51.709, v
+                      alue=alice@gmail.com                                      
+ 1                    column=info:age, timestamp=2026-09-17T10:54:25.052, value=
+                      22                                                        
+ 1                    column=info:name, timestamp=2026-09-17T10:54:08.870, value
+                      =Alice                                                    
+1 row(s)
+Took 0.0103 seconds         
+
+
+
+1) 1. Hospital Management in HBase
+a) Create a table patients with column families:
+personal → (name, age, gender)
+medical → (disease, doctor, ward)
+b) Insert at least 5 patient records.
+c) Retrieve complete details of patient P003.
+d) Display only patient names and diseases.
+e) Find all patients admitted to the "Cardiology" ward.
+f) Update the doctor assigned to patient P002.
+g) Count the total number of patients.
+h) Find patients older than 60 years using filters.
+i) Delete patient P005.
+j) Scan the table and display only names and wards.
+
+hbase:001:0> create 'patient', 'personal', 'medical'
+
+ERROR: Table already exists: patient!
+
+For usage try 'help "create"'
+
+Took 0.5904 seconds                                                             
+hbase:002:0> put 'patient', 'P001', 'personal:name', 'Rahul'
+Took 0.0897 seconds                                                             
+hbase:003:0> put 'patient', 'P001', 'personal:name', 'Rahul'
+Took 0.0038 seconds                                                             
+hbase:004:0> put 'patient', 'P001', 'personal:gender', 'Male'
+Took 0.0043 seconds                                                             
+hbase:005:0> put 'patient', 'P001', 'personal:age', '45'
+Took 0.0036 seconds                                                             
+hbase:006:0> put 'patient', 'P001', 'medical:disease', 'Diabetes'
+Took 0.0036 seconds                                                             
+hbase:007:0> put 'patient', 'P001', 'medical:doctor', 'Dr. Sharma'
+Took 0.0039 seconds                                                             
+hbase:008:0> put 'patient', 'P001', 'medical:ward', 'General'
+Took 0.0032 seconds                                                       
+
+hbase:033:0> get 'patient', 'P003'
+COLUMN                                               CELL                                                                                                                                                   
+ medical:disease                                     timestamp=2026-09-17T11:02:35.557, value=Hypertension                                                                                                  
+ medical:doctor                                      timestamp=2026-09-17T11:02:39.708, value=Dr. Ramesh                                                                                                    
+ medical:ward                                        timestamp=2026-09-17T11:02:44.076, value=Cardiology                                                                                                    
+ personal:age                                        timestamp=2026-09-17T11:02:25.148, value=68                                                                                                            
+ personal:gender                                     timestamp=2026-09-17T11:02:30.053, value=Male                                                                                                          
+ personal:name                                       timestamp=2026-09-17T11:02:20.865, value=Arjun                                                                                                         
+1 row(s)
+Took 0.0418 seconds                       
+
+
+hbase:034:0> scan 'patient', {COLUMNS => ['personal:name', 'medical:disease']}
+ROW                                                  COLUMN+CELL                                                                                                                                            
+ P001                                                column=medical:disease, timestamp=2026-09-17T11:01:31.615, value=Diabetes                                                                              
+ P001                                                column=personal:name, timestamp=2026-09-17T11:01:11.945, value=Rahul                                                                                   
+ P002                                                column=medical:disease, timestamp=2026-09-17T11:02:02.957, value=Heart Disease                                                                         
+ P002                                                column=personal:name, timestamp=2026-09-17T11:01:49.855, value=Priya                                                                                   
+ P003                                                column=medical:disease, timestamp=2026-09-17T11:02:35.557, value=Hypertension                                                                          
+ P003                                                column=personal:name, timestamp=2026-09-17T11:02:20.865, value=Arjun                                                                                   
+ P004                                                column=medical:disease, timestamp=2026-09-17T11:03:03.164, value=Asthma                                                                                
+ P004                                                column=personal:name, timestamp=2026-09-17T11:02:51.212, value=Sneha                                                                                   
+ P005                                                column=medical:disease, timestamp=2026-09-17T11:03:30.479, value=Arthritis                                                                             
+ P005                                                column=personal:name, timestamp=2026-09-17T11:03:16.289, value=Vikram                                                                                  
+5 row(s)
+Took 0.0287 seconds                                                                                                  
+
+
+hbase:035:0> scan 'patient', {FILTER => "ValueFilter(=, 'binary:Cardiology')"}
+ROW                                                  COLUMN+CELL                                                                                                                                            
+ P002                                                column=medical:ward, timestamp=2026-09-17T11:02:15.862, value=Cardiology                                                                               
+ P003                                                column=medical:ward, timestamp=2026-09-17T11:02:44.076, value=Cardiology                                                                               
+2 row(s)
+Took 0.0300 seconds           
+
+
+hbase:036:0> put 'patient', 'P002', 'medical:doctor', 'Dr. Anil'
+Took 0.0035 seconds                                                                                                                                                                                         
+hbase:037:0> count 'patient'
+5 row(s)
+Took 0
+
+hbase:038:0> scan 'patient', {FILTER => "SingleColumnValueFilter('personal','age',>, 'binary:60')"}
+ROW                                                  COLUMN+CELL                                                                                                                                            
+ P002                                                column=medical:disease, timestamp=2026-09-17T11:02:02.957, value=Heart Disease                                                                         
+ P002                                                column=medical:doctor, timestamp=2026-09-17T11:07:27.378, value=Dr. Anil                                                                               
+ P002                                                column=medical:ward, timestamp=2026-09-17T11:02:15.862, value=Cardiology                                                                               
+ P002                                                column=personal:age, timestamp=2026-09-17T11:01:53.695, value=62                                                                                       
+ P002                                                column=personal:gender, timestamp=2026-09-17T11:01:58.256, value=Female                                                                                
+ P002                                                column=personal:name, timestamp=2026-09-17T11:01:49.855, value=Priya                                                                                   
+ P003                                                column=medical:disease, timestamp=2026-09-17T11:02:35.557, value=Hypertension                                                                          
+ P003                                                column=medical:doctor, timestamp=2026-09-17T11:02:39.708, value=Dr. Ramesh                                                                             
+ P003                                                column=medical:ward, timestamp=2026-09-17T11:02:44.076, value=Cardiology                                                                               
+ P003                                                column=personal:age, timestamp=2026-09-17T11:02:25.148, value=68                                                                                       
+ P003                                                column=personal:gender, timestamp=2026-09-17T11:02:30.053, value=Male                                                                                  
+ P003                                                column=personal:name, timestamp=2026-09-17T11:02:20.865, value=Arjun                                                                                   
+ P005                                                column=medical:disease, timestamp=2026-09-17T11:03:30.479, value=Arthritis                                                                             
+ P005                                                column=medical:doctor, timestamp=2026-09-17T11:03:34.503, value=Dr. Rao                                                                                
+ P005                                                column=medical:ward, timestamp=2026-09-17T11:03:39.700, value=Orthopedic                                                                               
+ P005                                                column=personal:age, timestamp=2026-09-17T11:03:21.467, value=72                                                                                       
+ P005                                                column=personal:gender, timestamp=2026-09-17T11:03:26.375, value=Male                                                                                  
+ P005                                                column=personal:name, timestamp=2026-09-17T11:03:16.289, value=Vikram                                                                                  
+3 row(s)
+Took 0.0233 seconds                                                                                                                                                                                         
+hbase:039:0> deleteall 'patient', 'P005'
+Took 0.0060 seconds                                                                                                                                                                                         
+hbase:040:0> scan 'patient', {COLUMNS => ['personal:name', 'medical:ward']}
+ROW                                                  COLUMN+CELL                                                                                                                                            
+ P001                                                column=medical:ward, timestamp=2026-09-17T11:01:44.944, value=General                                                                                  
+ P001                                                column=personal:name, timestamp=2026-09-17T11:01:11.945, value=Rahul                                                                                   
+ P002                                                column=medical:ward, timestamp=2026-09-17T11:02:15.862, value=Cardiology                                                                               
+ P002                                                column=personal:name, timestamp=2026-09-17T11:01:49.855, value=Priya                                                                                   
+ P003                                                column=medical:ward, timestamp=2026-09-17T11:02:44.076, value=Cardiology                                                                               
+ P003                                                column=personal:name, timestamp=2026-09-17T11:02:20.865, value=Arjun                                                                                   
+ P004                                                column=medical:ward, timestamp=2026-09-17T11:03:11.385, value=General                                                                                  
+ P004                                                column=personal:name, timestamp=2026-09-17T11:02:51.212, value=Sneha                                                                                   
+4 row(s)
+Took 0.0114 seconds                 
+
+
+
+
+
+
+
+2. Online Shopping System
+a) Create a table products with column families:
+info → (name, category, price)
+stock → (quantity, supplier)
+b) Insert product details for at least 6 products.
+c) Retrieve details of product PR004.
+d) Display all products belonging to the "Electronics" category.
+e) Find products whose price is greater than ₹20,000.
+f) Update the stock quantity of PR002.
+g) Count the total number of products.
+h) Display only product names and prices.
+i) Delete product PR005.
+j) Find the most expensive product using filters.
+
+
+hbase:003:0> create 'product', 'info', 'stock'
+2026-09-17 11:15:14,662 INFO  [main] client.HBaseAdmin (HBaseAdmin.java:postOperationResult(3599)) - Operation: CREATE, Table Name: default:product, procId: 113 completed
+Created table product
+Took 2.1611 seconds                                                                                                                                                                                         
+=> Hbase::Table - product
+hbase:004:0> put 'product', 'PR001', 'info:name', 'Laptop'
+Took 0.0666 seconds                                                                                                                                                                                         
+hbase:005:0> put 'product', 'PR001', 'info:category', 'Electronics'
+Took 0.0037 seconds                                                             
+hbase:006:0> put 'product', 'PR001', 'info:price', '65000'
+Took 0.0034 seconds                                                             
+hbase:007:0> put 'product', 'PR001', 'stock:quantity', '20'
+Took 0.0095 seconds                                                             
+hbase:008:0> 2026-09-17 11:15:46,239 INFO  [ReadOnlyZKClient-127.0.0.1:2181@0x3c07e830] zookeeper.ZooKeeper (ZooKeeper.java:close(1232)) - Session: 0x10000119d760005 closed
+2026-09-17 11:15:46,239 INFO  [ReadOnlyZKClient-127.0.0.1:2181@0x3c07e830-EventThread] zookeeper.ClientCnxn (ClientCnxn.java:run(569)) - EventThread shut down for session: 0x10000119d760005
+put 'product', 'PR001', 'stock:supplier', 'Dell'
+Took 0.0032 seconds                                                             
+hbase:009:0> put 'product', 'PR002', 'info:name', 'Smartphone'
+Took 0.0032 seconds                                                             
+hbase:010:0> put 'product', 'PR002', 'info:category', 'Electronics'
+Took 0.0040 seconds                                                             
+hbase:011:0> put 'product', 'PR002', 'info:price', '45000'
+Took 0.0058 seconds                                                             
+hbase:012:0> put 'product', 'PR002', 'stock:quantity', '15'
+Took 0.0031 seconds                                                             
+hbase:013:0> put 'product', 'PR002', 'stock:supplier', 'Samsung'
+Took 0.0027 seconds                                                             
+hbase:014:0> put 'product', 'PR003', 'info:name', 'Headphones'
+Took 0.0030 seconds                                                             
+hbase:015:0> put 'product', 'PR003', 'info:category', 'Electronics'
+Took 0.0040 seconds                                                             
+hbase:016:0> put 'product', 'PR003', 'info:price', '5000'
+Took 0.0030 seconds                                                             
+hbase:017:0> put 'product', 'PR003', 'stock:quantity', '50'
+Took 0.0026 seconds                                                             
+hbase:018:0> put 'product', 'PR003', 'stock:supplier', 'Sony'
+Took 0.0029 seconds                                                             
+hbase:019:0> put 'product', 'PR004', 'info:name', 'Refrigerator'
+Took 0.0040 seconds                                                             
+hbase:020:0> put 'product', 'PR004', 'info:category', 'Home Appliance'
+Took 0.0036 seconds                                                             
+hbase:021:0> put 'product', 'PR004', 'info:price', '55000'
+Took 0.0051 seconds                                                             
+hbase:022:0> put 'product', 'PR004', 'stock:quantity', '10'
+Took 0.0082 seconds                                                             
+hbase:023:0> put 'product', 'PR004', 'stock:supplier', 'LG'
+Took 0.0028 seconds                                                             
+hbase:024:0> put 'product', 'PR005', 'info:name', 'Washing Machine'
+Took 0.0030 seconds                                                             
+hbase:025:0> put 'product', 'PR005', 'info:category', 'Home Appliance'
+Took 0.0033 seconds                                                             
+hbase:026:0> put 'product', 'PR005', 'info:price', '30000'
+Took 0.0036 seconds                                                             
+hbase:027:0> put 'product', 'PR005', 'stock:quantity', '8'
+Took 0.0025 seconds                                                             
+hbase:028:0> put 'product', 'PR005', 'stock:supplier', 'Whirlpool'
+Took 0.0032 seconds                                                             
+hbase:029:0> put 'product', 'PR006', 'info:name', 'Television'
+Took 0.0038 seconds                                                             
+hbase:030:0> put 'product', 'PR006', 'info:category', 'Electronics'
+Took 0.0033 seconds                                                             
+hbase:031:0> put 'product', 'PR006', 'info:price', '75000'
+Took 0.0039 seconds                                                             
+hbase:032:0> put 'product', 'PR006', 'stock:quantity', '12'
+Took 0.0031 seconds                                                             
+hbase:033:0> put 'product', 'PR006', 'stock:supplier', 'Sony'
+Took 0.0030 seconds                                                             
+hbase:034:0> get 'product', 'PR004'
+COLUMN                CELL                                                      
+ info:category        timestamp=2026-09-17T11:16:40.708, value=Home Appliance   
+ info:name            timestamp=2026-09-17T11:16:36.385, value=Refrigerator     
+ info:price           timestamp=2026-09-17T11:16:45.096, value=55000            
+ stock:quantity       timestamp=2026-09-17T11:16:49.315, value=10               
+ stock:supplier       timestamp=2026-09-17T11:16:53.266, value=LG               
+1 row(s)
+Took 0.0224 seconds                                                             
+hbase:035:0> scan 'product', {FILTER => "SingleColumnValueFilter('info','category',=,'binary:Electronics')"}
+ROW                   COLUMN+CELL                                               
+ PR001                column=info:category, timestamp=2026-09-17T11:15:35.618, v
+                      alue=Electronics                                          
+ PR001                column=info:name, timestamp=2026-09-17T11:15:28.340, value
+                      =Laptop                                                   
+ PR001                column=info:price, timestamp=2026-09-17T11:15:39.314, valu
+                      e=65000                                                   
+ PR001                column=stock:quantity, timestamp=2026-09-17T11:15:43.252, 
+                      value=20                                                  
+ PR001                column=stock:supplier, timestamp=2026-09-17T11:15:47.525, 
+                      value=Dell                                                
+ PR002                column=info:category, timestamp=2026-09-17T11:15:58.434, v
+                      alue=Electronics                                          
+ PR002                column=info:name, timestamp=2026-09-17T11:15:52.727, value
+                      =Smartphone                                               
+ PR002                column=info:price, timestamp=2026-09-17T11:16:02.821, valu
+                      e=45000                                                   
+ PR002                column=stock:quantity, timestamp=2026-09-17T11:16:06.855, 
+                      value=15                                                  
+ PR002                column=stock:supplier, timestamp=2026-09-17T11:16:10.758, 
+                      value=Samsung                                             
+ PR003                column=info:category, timestamp=2026-09-17T11:16:18.949, v
+                      alue=Electronics                                          
+ PR003                column=info:name, timestamp=2026-09-17T11:16:14.964, value
+                      =Headphones                                               
+ PR003                column=info:price, timestamp=2026-09-17T11:16:23.678, valu
+                      e=5000                                                    
+ PR003                column=stock:quantity, timestamp=2026-09-17T11:16:27.939, 
+                      value=50                                                  
+ PR003                column=stock:supplier, timestamp=2026-09-17T11:16:32.532, 
+                      value=Sony                                                
+ PR006                column=info:category, timestamp=2026-09-17T11:17:24.974, v
+                      alue=Electronics                                          
+ PR006                column=info:name, timestamp=2026-09-17T11:17:20.158, value
+                      =Television                                               
+ PR006                column=info:price, timestamp=2026-09-17T11:17:28.501, valu
+                      e=75000                                                   
+ PR006                column=stock:quantity, timestamp=2026-09-17T11:17:33.051, 
+                      value=12                                                  
+ PR006                column=stock:supplier, timestamp=2026-09-17T11:17:36.986, 
+                      value=Sony                                                
+4 row(s)
+Took 0.0278 seconds                                                             
+hbase:036:0> scan 'product', {FILTER => "SingleColumnValueFilter('info','price',>,'binary:20000')"}
+ROW                   COLUMN+CELL                                               
+ PR001                column=info:category, timestamp=2026-09-17T11:15:35.618, v
+                      alue=Electronics                                          
+ PR001                column=info:name, timestamp=2026-09-17T11:15:28.340, value
+                      =Laptop                                                   
+ PR001                column=info:price, timestamp=2026-09-17T11:15:39.314, valu
+                      e=65000                                                   
+ PR001                column=stock:quantity, timestamp=2026-09-17T11:15:43.252, 
+                      value=20                                                  
+ PR001                column=stock:supplier, timestamp=2026-09-17T11:15:47.525, 
+                      value=Dell                                                
+ PR002                column=info:category, timestamp=2026-09-17T11:15:58.434, v
+                      alue=Electronics                                          
+ PR002                column=info:name, timestamp=2026-09-17T11:15:52.727, value
+                      =Smartphone                                               
+ PR002                column=info:price, timestamp=2026-09-17T11:16:02.821, valu
+                      e=45000                                                   
+ PR002                column=stock:quantity, timestamp=2026-09-17T11:16:06.855, 
+                      value=15                                                  
+ PR002                column=stock:supplier, timestamp=2026-09-17T11:16:10.758, 
+                      value=Samsung                                             
+ PR003                column=info:category, timestamp=2026-09-17T11:16:18.949, v
+                      alue=Electronics                                          
+ PR003                column=info:name, timestamp=2026-09-17T11:16:14.964, value
+                      =Headphones                                               
+ PR003                column=info:price, timestamp=2026-09-17T11:16:23.678, valu
+                      e=5000                                                    
+ PR003                column=stock:quantity, timestamp=2026-09-17T11:16:27.939, 
+                      value=50                                                  
+ PR003                column=stock:supplier, timestamp=2026-09-17T11:16:32.532, 
+                      value=Sony                                                
+ PR004                column=info:category, timestamp=2026-09-17T11:16:40.708, v
+                      alue=Home Appliance                                       
+ PR004                column=info:name, timestamp=2026-09-17T11:16:36.385, value
+                      =Refrigerator                                             
+ PR004                column=info:price, timestamp=2026-09-17T11:16:45.096, valu
+                      e=55000                                                   
+ PR004                column=stock:quantity, timestamp=2026-09-17T11:16:49.315, 
+                      value=10                                                  
+ PR004                column=stock:supplier, timestamp=2026-09-17T11:16:53.266, 
+                      value=LG                                                  
+ PR005                column=info:category, timestamp=2026-09-17T11:17:02.332, v
+                      alue=Home Appliance                                       
+ PR005                column=info:name, timestamp=2026-09-17T11:16:57.459, value
+                      =Washing Machine                                          
+ PR005                column=info:price, timestamp=2026-09-17T11:17:06.821, valu
+                      e=30000                                                   
+ PR005                column=stock:quantity, timestamp=2026-09-17T11:17:11.058, 
+                      value=8                                                   
+ PR005                column=stock:supplier, timestamp=2026-09-17T11:17:15.531, 
+                      value=Whirlpool                                           
+ PR006                column=info:category, timestamp=2026-09-17T11:17:24.974, v
+                      alue=Electronics                                          
+ PR006                column=info:name, timestamp=2026-09-17T11:17:20.158, value
+                      =Television                                               
+ PR006                column=info:price, timestamp=2026-09-17T11:17:28.501, valu
+                      e=75000                                                   
+ PR006                column=stock:quantity, timestamp=2026-09-17T11:17:33.051, 
+                      value=12                                                  
+ PR006                column=stock:supplier, timestamp=2026-09-17T11:17:36.986, 
+                      value=Sony                                                
+6 row(s)
+Took 0.0173 seconds                                                             
+hbase:037:0> put 'product', 'PR002', 'stock:quantity', '25'
+Took 0.0035 seconds                                                             
+hbase:038:0> count 'product'
+6 row(s)
+Took 0.0068 seconds                                                             
+=> 6
+hbase:039:0> scan 'product', {COLUMNS => ['info:name', 'info:price']}
+ROW                   COLUMN+CELL                                               
+ PR001                column=info:name, timestamp=2026-09-17T11:15:28.340, value
+                      =Laptop                                                   
+ PR001                column=info:price, timestamp=2026-09-17T11:15:39.314, valu
+                      e=65000                                                   
+ PR002                column=info:name, timestamp=2026-09-17T11:15:52.727, value
+                      =Smartphone                                               
+ PR002                column=info:price, timestamp=2026-09-17T11:16:02.821, valu
+                      e=45000                                                   
+ PR003                column=info:name, timestamp=2026-09-17T11:16:14.964, value
+                      =Headphones                                               
+ PR003                column=info:price, timestamp=2026-09-17T11:16:23.678, valu
+                      e=5000                                                    
+ PR004                column=info:name, timestamp=2026-09-17T11:16:36.385, value
+                      =Refrigerator                                             
+ PR004                column=info:price, timestamp=2026-09-17T11:16:45.096, valu
+                      e=55000                                                   
+ PR005                column=info:name, timestamp=2026-09-17T11:16:57.459, value
+                      =Washing Machine                                          
+ PR005                column=info:price, timestamp=2026-09-17T11:17:06.821, valu
+                      e=30000                                                   
+ PR006                column=info:name, timestamp=2026-09-17T11:17:20.158, value
+                      =Television                                               
+ PR006                column=info:price, timestamp=2026-09-17T11:17:28.501, valu
+                      e=75000                                                   
+6 row(s)
+Took 0.0173 seconds                                                             
+hbase:040:0> deleteall 'product', 'PR005'
+Took 0.0052 seconds                                                             
+hbase:041:0> can 'product', {FILTER => "SingleColumnValueFilter('info','price',=,'binary:75000')"}
+Traceback (most recent call last):
+NoMethodError (undefined method `can' for #<HBaseReceiver:0x31f1b268>)
+Did you mean?  scan
+hbase:042:0> scan 'product', {FILTER => "SingleColumnValueFilter('info','price',=,'binary:75000')"}
+ROW                   COLUMN+CELL                                               
+ PR006                column=info:category, timestamp=2026-09-17T11:17:24.974, v
+                      alue=Electronics                                          
+ PR006                column=info:name, timestamp=2026-09-17T11:17:20.158, value
+                      =Television                                               
+ PR006                column=info:price, timestamp=2026-09-17T11:17:28.501, valu
+                      e=75000                                                   
+ PR006                column=stock:quantity, timestamp=2026-09-17T11:17:33.051, 
+                      value=12                                                  
+ PR006                column=stock:supplier, timestamp=2026-09-17T11:17:36.986, 
+                      value=Sony                                                
+1 row(s)
+Took 0.0063 seconds                                                             
+hbase:043:0> 
+
+
+
+3. Course Registration System
+a) Create a table courses with column families:course_info → (course_name, credits, instructor)
+enrollment → (students_count, semester)
+b) Insert sample course records.
+c) Retrieve details of course CSE201.
+d) Display all courses with more than 4 credits.
+e) Find courses offered in Semester 5.
+f) Update the instructor of a selected course.
+g) Count the total number of courses.
+h) Retrieve only course names and instructors.
+i) Delete a course record.
+j) Find the course having the highest student enrollment.
+
+
+
+hbase:052:0> create 'course', 'course_info', 'enrollment'
+2026-09-17 11:23:04,402 INFO  [main] client.HBaseAdmin (HBaseAdmin.java:postOperationResult(3599)) - Operation: CREATE, Table Name: default:course, procId: 126 completed
+Created table course
+Took 2.1389 seconds                                                                                                                                                                                         
+=> Hbase::Table - course
+hbase:053:0> put 'course', 'CSE201', 'course_info:course_name', 'Data Structures'
+Took 0.0092 seconds                                                                                                                                                                                         
+hbase:054:0> put 'course', 'CSE201', 'course_info:credits', '4'
+Took 0.0040 seconds                                                                                                                                                                                         
+hbase:055:0> put 'course', 'CSE201', 'course_info:instructor', 'Dr. Kumar'
+Took 0.0036 seconds                                                                                                                                                                                         
+hbase:056:0> put 'course', 'CSE201', 'enrollment:students_count', '80'
+Took 0.0042 seconds                                                                                                                                                                                         
+hbase:057:0> put 'course', 'CSE201', 'enrollment:semester', '3'
+Took 0.0040 seconds                                                                                                                                                                                         
+hbase:058:0> put 'course', 'CSE202', 'course_info:course_name', 'Database Management'
+Took 0.0043 seconds                                                                                                                                                                                         
+hbase:059:0> put 'course', 'CSE202', 'course_info:credits', '5'
+Took 0.0026 seconds                                                                                                                                                                                         
+hbase:060:0> put 'course', 'CSE202', 'course_info:instructor', 'Dr. Priya'
+Took 0.0040 seconds                                                                                                                                                                                         
+hbase:061:0>  put 'course', 'CSE202', 'enrollment:students_count', '120'
+Took 0.0042 seconds                                                                                                                                                                                         
+hbase:062:0> put 'course', 'CSE202', 'enrollment:semester', '5'
+Took 0.0043 seconds                                                                                                                                                                                         
+hbase:063:0> put 'course', 'CSE203', 'course_info:course_name', 'Operating Systems'
+Took 0.0044 seconds                                                                                                                                                                                         
+hbase:064:0> put 'course', 'CSE203', 'course_info:credits', '5'
+Took 0.0048 seconds                                                                                                                                                                                         
+hbase:065:0> put 'course', 'CSE203', 'course_info:instructor', 'Dr. Ramesh'
+Took 0.0054 seconds                                                                                                                                                                                         
+hbase:066:0> put 'course', 'CSE203', 'enrollment:students_count', '100'
+Took 0.0047 seconds                                                                                                                                                                                         
+hbase:067:0>  put 'course', 'CSE203', 'enrollment:semester', '5'
+Took 0.0041 seconds                                                                                                                                                                                         
+hbase:068:0> put 'course', 'CSE204', 'course_info:course_name', 'Computer Networks'
+Took 0.0035 seconds                                                                                                                                                                                         
+hbase:069:0> put 'course', 'CSE204', 'course_info:credits', '4'
+Took 0.0027 seconds                                                                                                                                                                                         
+hbase:070:0> put 'course', 'CSE204', 'course_info:instructor', 'Dr. Anil'
+Took 0.0063 seconds                                                                                                                                                                                         
+hbase:071:0> put 'course', 'CSE204', 'enrollment:students_count', '90'
+Took 0.0041 seconds                                                                                                                                                                                         
+hbase:072:0> put 'course', 'CSE204', 'enrollment:semester', '6'
+Took 0.0113 seconds                                                                                                                                                                                         
+hbase:073:0> put 'course', 'CSE205', 'course_info:course_name', 'Artificial Intelligence'
+Took 0.0047 seconds                                                                                                                                                                                         
+hbase:074:0> put 'course', 'CSE205', 'course_info:credits', '6'
+Took 0.0028 seconds                                                                                                                                                                                         
+hbase:075:0> put 'course', 'CSE205', 'course_info:instructor', 'Dr. Mehta'
+Took 0.0037 seconds                                                                                                                                                                                         
+hbase:076:0> put 'course', 'CSE205', 'enrollment:students_count', '70'
+Took 0.0037 seconds                                                                                                                                                                                         
+hbase:077:0> put 'course', 'CSE205', 'enrollment:semester', '7'
+Took 0.0034 seconds                                                                                                                                                                                         
+hbase:078:0> get 'course', 'CSE201'
+COLUMN                CELL                                                      
+ course_info:course_n timestamp=2026-09-17T11:23:09.055, value=Data Structures  
+ ame                                                                            
+ course_info:credits  timestamp=2026-09-17T11:23:14.381, value=4                
+ course_info:instruct timestamp=2026-09-17T11:23:19.949, value=Dr. Kumar        
+ or                                                                             
+ enrollment:semester  timestamp=2026-09-17T11:23:30.525, value=3                
+ enrollment:students_ timestamp=2026-09-17T11:23:25.437, value=80               
+ count                                                                          
+1 row(s)
+Took 0.0061 seconds                                                             
+hbase:079:0> scan 'course', {FILTER => "SingleColumnValueFilter('course_info','credits',>,'binary:4')"}
+ROW                   COLUMN+CELL                                               
+ CSE202               column=course_info:course_name, timestamp=2026-09-17T11:23
+                      :35.629, value=Database Management                        
+ CSE202               column=course_info:credits, timestamp=2026-09-17T11:23:40.
+                      816, value=5                                              
+ CSE202               column=course_info:instructor, timestamp=2026-09-17T11:23:
+                      45.205, value=Dr. Priya                                   
+ CSE202               column=enrollment:semester, timestamp=2026-09-17T11:23:56.
+                      572, value=5                                              
+ CSE202               column=enrollment:students_count, timestamp=2026-09-17T11:
+                      23:52.117, value=120                                      
+ CSE203               column=course_info:course_name, timestamp=2026-09-17T11:24
+                      :01.748, value=Operating Systems                          
+ CSE203               column=course_info:credits, timestamp=2026-09-17T11:24:07.
+                      120, value=5                                              
+ CSE203               column=course_info:instructor, timestamp=2026-09-17T11:24:
+                      12.221, value=Dr. Ramesh                                  
+ CSE203               column=enrollment:semester, timestamp=2026-09-17T11:24:21.
+                      892, value=5                                              
+ CSE203               column=enrollment:students_count, timestamp=2026-09-17T11:
+                      24:16.933, value=100                                      
+ CSE205               column=course_info:course_name, timestamp=2026-09-17T11:24
+                      :51.560, value=Artificial Intelligence                    
+ CSE205               column=course_info:credits, timestamp=2026-09-17T11:24:56.
+                      560, value=6                                              
+ CSE205               column=course_info:instructor, timestamp=2026-09-17T11:25:
+                      00.747, value=Dr. Mehta                                   
+ CSE205               column=enrollment:semester, timestamp=2026-09-17T11:25:10.
+                      147, value=7                                              
+ CSE205               column=enrollment:students_count, timestamp=2026-09-17T11:
+                      25:04.956, value=70                                       
+3 row(s)
+Took 0.0127 seconds                                                             
+hbase:080:0> scan 'course', {FILTER => "SingleColumnValueFilter('enrollment','semester',=,'binary:5')"}
+ROW                   COLUMN+CELL                                               
+ CSE202               column=course_info:course_name, timestamp=2026-09-17T11:23
+                      :35.629, value=Database Management                        
+ CSE202               column=course_info:credits, timestamp=2026-09-17T11:23:40.
+                      816, value=5                                              
+ CSE202               column=course_info:instructor, timestamp=2026-09-17T11:23:
+                      45.205, value=Dr. Priya                                   
+ CSE202               column=enrollment:semester, timestamp=2026-09-17T11:23:56.
+                      572, value=5                                              
+ CSE202               column=enrollment:students_count, timestamp=2026-09-17T11:
+                      23:52.117, value=120                                      
+ CSE203               column=course_info:course_name, timestamp=2026-09-17T11:24
+                      :01.748, value=Operating Systems                          
+ CSE203               column=course_info:credits, timestamp=2026-09-17T11:24:07.
+                      120, value=5                                              
+ CSE203               column=course_info:instructor, timestamp=2026-09-17T11:24:
+                      12.221, value=Dr. Ramesh                                  
+ CSE203               column=enrollment:semester, timestamp=2026-09-17T11:24:21.
+                      892, value=5                                              
+ CSE203               column=enrollment:students_count, timestamp=2026-09-17T11:
+                      24:16.933, value=100                                      
+2 row(s)
+Took 0.0075 seconds                                                             
+hbase:081:0> put 'course', 'CSE201', 'course_info:instructor', 'Dr. Suresh'
+Took 0.0031 seconds                                                             
+hbase:082:0> get 'course', 'CSE201'
+COLUMN                CELL                                                      
+ course_info:course_n timestamp=2026-09-17T11:23:09.055, value=Data Structures  
+ ame                                                                            
+ course_info:credits  timestamp=2026-09-17T11:23:14.381, value=4                
+ course_info:instruct timestamp=2026-09-17T11:25:45.147, value=Dr. Suresh       
+ or                                                                             
+ enrollment:semester  timestamp=2026-09-17T11:23:30.525, value=3                
+ enrollment:students_ timestamp=2026-09-17T11:23:25.437, value=80               
+ count                                                                          
+1 row(s)
+Took 0.0051 seconds                                                             
+hbase:083:0> count 'course'
+5 row(s)
+Took 0.0089 seconds                                                             
+=> 5
+hbase:084:0> scan 'course', {COLUMNS => ['course_info:course_name', 'course_info:instructor']}
+ROW                   COLUMN+CELL                                               
+ CSE201               column=course_info:course_name, timestamp=2026-09-17T11:23
+                      :09.055, value=Data Structures                            
+ CSE201               column=course_info:instructor, timestamp=2026-09-17T11:25:
+                      45.147, value=Dr. Suresh                                  
+ CSE202               column=course_info:course_name, timestamp=2026-09-17T11:23
+                      :35.629, value=Database Management                        
+ CSE202               column=course_info:instructor, timestamp=2026-09-17T11:23:
+                      45.205, value=Dr. Priya                                   
+ CSE203               column=course_info:course_name, timestamp=2026-09-17T11:24
+                      :01.748, value=Operating Systems                          
+ CSE203               column=course_info:instructor, timestamp=2026-09-17T11:24:
+                      12.221, value=Dr. Ramesh                                  
+ CSE204               column=course_info:course_name, timestamp=2026-09-17T11:24
+                      :26.707, value=Computer Networks                          
+ CSE204               column=course_info:instructor, timestamp=2026-09-17T11:24:
+                      36.422, value=Dr. Anil                                    
+ CSE205               column=course_info:course_name, timestamp=2026-09-17T11:24
+                      :51.560, value=Artificial Intelligence                    
+ CSE205               column=course_info:instructor, timestamp=2026-09-17T11:25:
+                      00.747, value=Dr. Mehta                                   
+5 row(s)
+Took 0.0061 seconds                                                             
+hbase:085:0> deleteall 'course', 'CSE205'
+Took 0.0070 seconds                                                             
+hbase:086:0> scan 'course', {FILTER => "SingleColumnValueFilter('enrollment','students_count',=,'binary:120')"}
+ROW                   COLUMN+CELL                                               
+ CSE202               column=course_info:course_name, timestamp=2026-09-17T11:23
+                      :35.629, value=Database Management                        
+ CSE202               column=course_info:credits, timestamp=2026-09-17T11:23:40.
+                      816, value=5                                              
+ CSE202               column=course_info:instructor, timestamp=2026-09-17T11:23:
+                      45.205, value=Dr. Priya                                   
+ CSE202               column=enrollment:semester, timestamp=2026-09-17T11:23:56.
+                      572, value=5                                              
+ CSE202               column=enrollment:students_count, timestamp=2026-09-17T11:
+                      23:52.117, value=120                                      
+1 row(s)
+Took 0.0046 seconds                                                             
+hbase:087:0> 
+
+
+
+
+                                                                                         

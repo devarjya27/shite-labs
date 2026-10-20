@@ -1,0 +1,265 @@
+1. Employee Performance Analysis
+Dataset: employee_extended.csv
+emp_id, emp_name, gender, department, designation, salary, experience_years,
+performance_score, joining_date
+a) Load the dataset into SparkSQL.
+b) Create a temporary view.
+c) Identify the top-performing employee in each department.
+d) Display employees with performance scores above 90.
+e) Calculate average performance score by department.
+f) Store the output in HDFS.
+
+q1.py:
+
+bdalab@computinglab23-05:~/Documents/240968040/week 9$ cat q1.py
+from pyspark.sql import SparkSession
+
+
+spark = SparkSession.builder.appName("SimpleEmployeeAnalysis").getOrCreate()
+
+file_path = "hdfs://localhost:9000/user/240968040/lab9/employee_extended.csv"
+df = spark.read.option("header", "true").option("inferSchema", "true").csv(file_path)
+
+df.createOrReplaceTempView("employee_view")
+
+top_employee_df = spark.sql("""
+    SELECT * FROM (
+        SELECT *, ROW_NUMBER() OVER(PARTITION BY department ORDER BY performance_score DESC) as rnk
+        FROM employee_view
+    ) WHERE rnk = 1
+""")
+
+top_employee_df.show(truncate=False)
+
+
+above_90_df = spark.sql("""
+    SELECT * FROM employee_view WHERE performance_score > 90
+""")
+
+above_90_df.show(truncate=False)
+
+avg_score_df = spark.sql("""
+    SELECT department, AVG(performance_score) AS avg_performance_score
+    FROM employee_view
+    GROUP BY department
+""")
+
+avg_score_df.show(truncate=False)
+
+
+output_path = "hdfs://localhost:9000/user/240968040/lab9/output/q1"
+avg_score_df.write.mode("overwrite").parquet(output_path)
+
+spark.stop()
+
+
+Output:
+
++------+--------+------+----------+----------------+------+----------------+-----------------+------------+---+
+|emp_id|emp_name|gender|department|designation     |salary|experience_years|performance_score|joining_date|rnk|
++------+--------+------+----------+----------------+------+----------------+-----------------+------------+---+
+|110   |Divya   |Female|Sales     |Sales Manager   |80000 |7               |95               |2018-05-22  |1  |
+|105   |Vikram  |Male  |HR        |HR Manager      |75000 |8               |94               |2017-03-18  |1  |
+|108   |Meena   |Female|Finance   |Finance Manager |90000 |9               |97               |2016-11-05  |1  |
+|103   |Arjun   |Male  |IT        |Senior Developer|85000 |6               |96               |2019-01-20  |1  |
++------+--------+------+----------+----------------+------+----------------+-----------------+------------+---+
+
++------+--------+------+----------+-----------------+------+----------------+-----------------+------------+
+|emp_id|emp_name|gender|department|designation      |salary|experience_years|performance_score|joining_date|
++------+--------+------+----------+-----------------+------+----------------+-----------------+------------+
+|101   |Rahul   |Male  |IT        |Software Engineer|65000 |3               |92               |2022-06-15  |
+|103   |Arjun   |Male  |IT        |Senior Developer |85000 |6               |96               |2019-01-20  |
+|104   |Priya   |Female|Finance   |Accountant       |60000 |5               |91               |2020-08-12  |
+|105   |Vikram  |Male  |HR        |HR Manager       |75000 |8               |94               |2017-03-18  |
+|108   |Meena   |Female|Finance   |Finance Manager  |90000 |9               |97               |2016-11-05  |
+|109   |Suresh  |Male  |Sales     |Sales Executive  |50000 |3               |93               |2021-09-14  |
+|110   |Divya   |Female|Sales     |Sales Manager    |80000 |7               |95               |2018-05-22  |
++------+--------+------+----------+-----------------+------+----------------+-----------------+------------+
+
++----------+---------------------+
+|department|avg_performance_score|
++----------+---------------------+
+|Sales     |94.0                 |
+|HR        |91.0                 |
+|Finance   |92.33333333333333    |
+|IT        |91.66666666666667    |
++----------+---------------------+
+
+
+2. Product Sales Insights
+Dataset: sales_data.csv
+sale_id, order_date, customer_id, customer_name, product_name, category, region, quantity,
+unit_price, revenue
+a) Load the sales dataset.
+b) Create a SQL view.
+c) Find the best-selling product in each category.
+d) Calculate category-wise revenue.
+e) Identify products generating revenue above ₹1,00,000.
+f) Save results back to HDFS.
+
+q2.py:
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("ProductSalesInsights").getOrCreate()
+
+file_path = "hdfs://localhost:9000/user/240968040/lab9/sales_data.csv"
+df = spark.read.option("header", "true").option("inferSchema", "true").csv(file_path)
+
+df.createOrReplaceTempView("sales_view")
+
+best_product_df = spark.sql("""
+    SELECT * FROM (
+        SELECT *, ROW_NUMBER() OVER(PARTITION BY category ORDER BY quantity DESC) as rnk
+        FROM sales_view
+    ) WHERE rnk = 1
+""")
+best_product_df.show(truncate=False)
+
+category_revenue_df = spark.sql("""
+    SELECT category, SUM(revenue) AS total_revenue
+    FROM sales_view
+    GROUP BY category
+""")
+category_revenue_df.show(truncate=False)
+
+high_revenue_df = spark.sql("""
+    SELECT product_name, SUM(revenue) AS total_product_revenue
+    FROM sales_view
+    GROUP BY product_name
+    HAVING total_product_revenue > 100000
+""")
+high_revenue_df.show(truncate=False)
+
+output_path = "hdfs://localhost:9000/user/240968040/lab9/output/q2"
+category_revenue_df.write.mode("overwrite").parquet(output_path)
+
+spark.stop()
+
+output:
+
++-------+----------+-----------+-------------+------------+-----------+------+--------+----------+-------+---+
+|sale_id|order_date|customer_id|customer_name|product_name|category   |region|quantity|unit_price|revenue|rnk|
++-------+----------+-----------+-------------+------------+-----------+------+--------+----------+-------+---+
+|3      |2026-01-10|C003       |Arjun        |Headphones  |Electronics|West  |10      |3000      |30000  |1  |
+|9      |2026-01-25|C009       |Suresh       |Office Chair|Furniture  |East  |10      |8000      |80000  |1  |
++-------+----------+-----------+-------------+------------+-----------+------+--------+----------+-------+---+
+
++-----------+-------------+
+|category   |total_revenue|
++-----------+-------------+
+|Electronics|690000       |
+|Furniture  |330000       |
++-----------+-------------+
+
++------------+---------------------+
+|product_name|total_product_revenue|
++------------+---------------------+
+|Desk        |120000               |
+|Office Chair|120000               |
+|Laptop      |300000               |
+|Mobile      |360000               |
++------------+---------------------+
+
+
+3. Department Insights. Using employees & departments tables:
+Datasets: employees.csv
+emp_id, emp_name, gender, department_id, designation, salary
+departments.csv
+department_id, department_name, location, budget
+a) Load both datasets into SparkSQL.
+b) Create temporary views.
+c) Join employees and departments tables.
+d) Display employee names with department names.
+e) Count employees in each department.
+f) Find departments with average salary greater than ₹60,000.
+
+
+q3.py:
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("DepartmentInsights").getOrCreate()
+
+emp_path = "hdfs://localhost:9000/user/240968040/lab9/employees.csv"
+dept_path = "hdfs://localhost:9000/user/240968040/lab9/departments.csv"
+
+emp_df = spark.read.option("header", "true").option("inferSchema", "true").csv(emp_path)
+dept_df = spark.read.option("header", "true").option("inferSchema", "true").csv(dept_path)
+
+emp_df.createOrReplaceTempView("employees")
+dept_df.createOrReplaceTempView("departments")
+
+joined_df = spark.sql("""
+    SELECT e.*, d.department_name, d.location, d.budget
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id
+""")
+
+emp_dept_names_df = spark.sql("""
+    SELECT e.emp_name, d.department_name
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id
+""")
+emp_dept_names_df.show(truncate=False)
+
+emp_count_df = spark.sql("""
+    SELECT d.department_name, COUNT(e.emp_id) AS employee_count
+    FROM departments d
+    LEFT JOIN employees e ON d.department_id = e.department_id
+    GROUP BY d.department_name
+""")
+emp_count_df.show(truncate=False)
+
+high_salary_dept_df = spark.sql("""
+    SELECT d.department_name, AVG(e.salary) AS avg_salary
+    FROM employees e
+    JOIN departments d ON e.department_id = d.department_id
+    GROUP BY d.department_name
+    HAVING avg_salary > 60000
+""")
+high_salary_dept_df.show(truncate=False)
+
+base_path = "hdfs://localhost:9000/user/240968040/lab9/output/q3/"
+
+joined_df.write.mode("overwrite").parquet(base_path + "output_joined_employees_departments")
+emp_dept_names_df.write.mode("overwrite").parquet(base_path + "output_emp_dept_names")
+emp_count_df.write.mode("overwrite").parquet(base_path + "output_department_employee_counts")
+high_salary_dept_df.write.mode("overwrite").parquet(base_path + "output_high_salary_departments")
+spark.stop()
+
+Output:
+
++--------+---------------+
+|emp_name|department_name|
++--------+---------------+
+|Rahul   |IT             |
+|Anita   |HR             |
+|Arjun   |IT             |
+|Priya   |Finance        |
+|Vikram  |HR             |
+|Neha    |Finance        |
+|Kiran   |IT             |
+|Meena   |Finance        |
+|Suresh  |Sales          |
+|Divya   |Sales          |
++--------+---------------+
+
++---------------+--------------+
+|department_name|employee_count|
++---------------+--------------+
+|Sales          |2             |
+|HR             |2             |
+|Finance        |3             |
+|IT             |3             |
++---------------+--------------+
+
++---------------+-----------------+
+|department_name|avg_salary       |
++---------------+-----------------+
+|Sales          |65000.0          |
+|HR             |65000.0          |
+|Finance        |73333.33333333333|
+|IT             |70000.0          |
++---------------+-----------------+
+

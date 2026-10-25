@@ -1,0 +1,54 @@
+Dataset Sample:
++-----------+-----------------+---------+----------------+------+-------------------+---------------+---+--------------------+-----------------+----------+------------------+-----------+
+|employee_id|       department|   region|       education|gender|recruitment_channel|no_of_trainings|age|previous_year_rating|length_of_service|awards_won|avg_training_score|is_promoted|
++-----------+-----------------+---------+----------------+------+-------------------+---------------+---+--------------------+-----------------+----------+------------------+-----------+
+|      65438|Sales & Marketing| region_7|Master's & above|     f|           sourcing|              1| 35|                   5|                8|         0|                49|          0|
+|      65141|       Operations|region_22|      Bachelor's|     m|              other|              1| 30|                   5|                4|         0|                60|          0|
+|       7513|Sales & Marketing|region_19|      Bachelor's|     m|           sourcing|              1| 34|                   3|                7|         0|                50|          0|
+|       2542|Sales & Marketing|region_23|      Bachelor's|     m|              other|              2| 39|                   1|               10|         0|                50|          0|
+|      48945|       Technology|region_26|      Bachelor's|     m|              other|              1| 45|                   3|                2|         0|                73|          0|
++-----------+-----------------+---------+----------------+------+-------------------+---------------+---+--------------------+-----------------+----------+------------------+-----------+
+only showing top 5 rows
+
+Dataset Schema:
+root
+ |-- employee_id: integer (nullable = true)
+ |-- department: string (nullable = true)
+ |-- region: string (nullable = true)
+ |-- education: string (nullable = true)
+ |-- gender: string (nullable = true)
+ |-- recruitment_channel: string (nullable = true)
+ |-- no_of_trainings: integer (nullable = true)
+ |-- age: integer (nullable = true)
+ |-- previous_year_rating: integer (nullable = true)
+ |-- length_of_service: integer (nullable = true)
+ |-- awards_won: integer (nullable = true)
+ |-- avg_training_score: integer (nullable = true)
+ |-- is_promoted: integer (nullable = true)
+
+Dataset Summary Statistics:
++-------+-----------------+----------+--------+----------------+------+-------------------+------------------+-----------------+--------------------+-----------------+--------------------+------------------+-------------------+
+|summary|      employee_id|department|  region|       education|gender|recruitment_channel|   no_of_trainings|              age|previous_year_rating|length_of_service|          awards_won|avg_training_score|        is_promoted|
++-------+-----------------+----------+--------+----------------+------+-------------------+------------------+-----------------+--------------------+-----------------+--------------------+------------------+-------------------+
+|  count|            46380|     46380|   46380|           46380| 46380|              46380|             46380|            46380|               46380|            46380|               46380|             46380|              46380|
+|   mean|39191.50424752048|      null|    null|            null|  null|               null|1.2545062526951272|35.57240189736956|   3.332319965502372|6.307956015523933|0.023501509271237602|63.927576541612765|0.08777490297542044|
+| stddev|22644.41954920121|      null|    null|            null|  null|               null|0.6079851326296286|7.526501292393827|    1.25896986385141|4.202142521738966| 0.15149152831672094|13.425576223457673|0.28297030908048765|
+|    min|                1| Analytics|region_1|      Bachelor's|     f|              other|                 1|               20|                   1|                1|                   0|                39|                  0|
+|    max|            78298|Technology|region_9|Master's & above|     m|           sourcing|                10|               60|                   5|               37|                   1|                99|                  1|
++-------+-----------------+----------+--------+----------------+------+-------------------+------------------+-----------------+--------------------+-----------------+--------------------+------------------+-------------------+
+
+Classification AUC (Promotion Prediction): 0.7298163859170422
+Model successfully saved to hdfs://localhost:9000/user/240968040/lab10/output/promotion_classification_model
+
+--- Deploying / Loading Saved Model for Future Predictions ---
++-----------+-----------+----------+--------------------+
+|employee_id|is_promoted|prediction|         probability|
++-----------+-----------+----------+--------------------+
+|          4|          0|       0.0|[0.94540126630640...|
+|          9|          0|       0.0|[0.89172739112212...|
+|         12|          0|       0.0|[0.90054465574418...|
+|         28|          0|       0.0|[0.94492182845421...|
+|         39|          1|       0.0|[0.54259864516953...|
++-----------+-----------+----------+--------------------+
+only showing top 5 rows
+

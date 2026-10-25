@@ -1,0 +1,39 @@
+Dataset Sample:
++-----------+---+------+-----------+---------+----------------+-------------------+---------------------+---------------------+------+---------+
+|Employee_ID|Age|Gender| Department|Job_Title|Years_at_Company| Satisfaction_Level|Average_Monthly_Hours|Promotion_Last_5Years|Salary|Attrition|
++-----------+---+------+-----------+---------+----------------+-------------------+---------------------+---------------------+------+---------+
+|          0| 27|  Male|  Marketing|  Manager|               9| 0.5862512562476163|                  151|                    0| 60132|        0|
+|          1| 53|Female|      Sales| Engineer|              10|0.26116088945025273|                  221|                    1| 79947|        0|
+|          2| 59|Female|  Marketing|  Analyst|               8| 0.3043817175126141|                  184|                    0| 46958|        1|
+|          3| 42|Female|Engineering|  Manager|               1|0.48077886980603046|                  242|                    0| 40662|        0|
+|          4| 44|Female|      Sales| Engineer|              10| 0.6362438875959893|                  229|                    1| 74307|        0|
++-----------+---+------+-----------+---------+----------------+-------------------+---------------------+---------------------+------+---------+
+only showing top 5 rows
+
+Dataset Schema:
+root
+ |-- Employee_ID: integer (nullable = true)
+ |-- Age: integer (nullable = true)
+ |-- Gender: string (nullable = true)
+ |-- Department: string (nullable = true)
+ |-- Job_Title: string (nullable = true)
+ |-- Years_at_Company: integer (nullable = true)
+ |-- Satisfaction_Level: double (nullable = true)
+ |-- Average_Monthly_Hours: integer (nullable = true)
+ |-- Promotion_Last_5Years: integer (nullable = true)
+ |-- Salary: integer (nullable = true)
+ |-- Attrition: integer (nullable = true)
+
+Dataset Summary Statistics:
++-------+-----------------+------------------+------+-----------+----------+------------------+--------------------+---------------------+---------------------+------------------+----------------+
+|summary|      Employee_ID|               Age|Gender| Department| Job_Title|  Years_at_Company|  Satisfaction_Level|Average_Monthly_Hours|Promotion_Last_5Years|            Salary|       Attrition|
++-------+-----------------+------------------+------+-----------+----------+------------------+--------------------+---------------------+---------------------+------------------+----------------+
+|  count|             1000|              1000|  1000|       1000|      1000|              1000|                1000|                 1000|                 1000|              1000|            1000|
+|   mean|            499.5|            42.205|  null|       null|      null|             5.605|  0.5059949160627308|              199.493|                0.486|          64624.98|           0.495|
+| stddev|288.8194360957494|10.016451682322657|  null|       null|      null|2.8222225177933664| 0.28979670074710295|    29.63190849407105|   0.5000540511325294|20262.984332611613|0.50022517452166|
+|    min|                0|                25|Female|Engineering|Accountant|                 1|0.001376498343884...|                  150|                    0|             30099|               0|
+|    max|              999|                59|  Male|      Sales|   Manager|                10|  0.9999786460864067|                  249|                    1|             99991|               1|
++-------+-----------------+------------------+------+-----------+----------+------------------+--------------------+---------------------+---------------------+------------------+----------------+
+
+Classification AUC (Attrition): 0.5155677655677657
+Regression RMSE (Salary): 20358.627263731
